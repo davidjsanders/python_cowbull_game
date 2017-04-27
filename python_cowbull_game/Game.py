@@ -34,7 +34,7 @@ class Game:
     def __init__(self, *args, **kwargs):
         self._initialize(*args, **kwargs)
 
-    def _initialize(self, *args, **kwargs):
+    def _initialize(self, **kwargs):
         #
         # Validate game mode
         #
@@ -174,8 +174,6 @@ class Game:
         for a in analysis:
             bulls += 1 if a.match else 0
             cows += 1 if a.in_word else 0
-#            bulls += 1 if a['match'] else 0
-#            cows += 1 if (a['inlist'] and not a['match']) else 0
             analysis_results.append(a.get_object())
 
         if bulls == self.digits_used[self._mode]:
