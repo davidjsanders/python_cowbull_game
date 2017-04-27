@@ -6,7 +6,7 @@ from jsonschema import validate
 class GameObject:
     _key = None
     _status = None
-    _ttl = 3600
+    _ttl = None
     _answer = None
     _mode = None
     _guesses_remaining = None
@@ -52,23 +52,14 @@ class GameObject:
         'hard': 6
     }
 
-    def __init__(
-        self,
-        key,
-        status,
-        ttl,
-        answer,
-        mode,
-        guesses_remaining,
-        guesses_made
-    ):
-        self.key = key
-        self.status = status
-        self.ttl = ttl
-        self.answer = answer
-        self.mode = mode
-        self.guesses_remaining = guesses_remaining
-        self.guesses_made = guesses_made
+    def __init__(self):
+        self._key = None
+        self._status = None
+        self._ttl = None
+        self._answer = None
+        self._mode = None
+        self._guesses_remaining = None
+        self._guesses_made = None
 
     @property
     def key(self):
@@ -95,7 +86,11 @@ class GameObject:
     @ttl.setter
     def ttl(self, value):
         if not isinstance(value, int):
-            raise TypeError("TTL must be an integer representing seconds")
+            raise TypeError(
+                "TTL must be an integer representing the number of "
+                "seconds from the epoch (time.time()) when the game "
+                "object expires!"
+            )
         self._ttl = value
 
     @property
@@ -134,23 +129,49 @@ class GameObject:
     def guesses_made(self, value):
         self._guesses_made = value
 
+    def initialize(
+        self,
+        key,
+        status,
+        ttl,
+        answer,
+        mode,
+        guesses_remaining,
+        guesses_made
+    ):
+        self.key = key
+        self.status = status
+        self.ttl = ttl
+        self.answer = answer
+        self.mode = mode
+        self.guesses_remaining = guesses_remaining
+        self.guesses_made = guesses_made
+
     def dump(self):
-        return json.dumps(
-            {
-                "key": self._key or None,
-                "status": self._status or None,
-                "ttl": self._ttl or None,
-                "answer": self._answer.word or None,
-                "mode": self._mode or None,
-                "guesses_remaining": self._guesses_remaining or None,
-                "guesses_made": self._guesses_made or None
-            }
-        )
+        if self._key is None:
+            return_object = {}
+        else:
+            return_object = \
+                {
+                    "key": self._key,
+                    "status": self._status,
+                    "ttl": self._ttl,
+                    "answer": self._answer.word,
+                    "mode": self._mode,
+                    "guesses_remaining": self._guesses_remaining,
+                    "guesses_made": self._guesses_made
+                }
+
+        return json.dumps(return_object)
 
     def load(self, jsonstr):
         if not isinstance(jsonstr, str):
             raise TypeError("Load requires a valid JSON string")
         _temp_dict = json.loads(jsonstr)
+
+        if _temp_dict == {}:
+            self._key = None
+            return
 
         # Validate the dictionary object against the schema
         validate(_temp_dict, self.schema)
