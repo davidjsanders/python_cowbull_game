@@ -26,7 +26,7 @@ class Game:
             "guesses_made": 0
         }
         self._g.from_json(jsonstr=json.dumps(_game))
-        return self._g.key
+        return self._g.to_json()
 
     def load_game(self, jsonstr):
         self._g = GameObject()

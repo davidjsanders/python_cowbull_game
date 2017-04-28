@@ -33,7 +33,6 @@ class test_Game(TestCase):
 
         return_object = self.go.guess(2, 1, 4, 3)
 
-
     def test_game_save_load_game(self):
         self.go.new_game()
         save_str = self.go.save_game()
