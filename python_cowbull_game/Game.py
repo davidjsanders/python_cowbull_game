@@ -1,5 +1,6 @@
 import uuid
 import json
+import logging
 from time import time
 from python_digits import DigitWord
 from .GameObject import GameObject
@@ -48,8 +49,11 @@ class Game:
         :return: JSON String containing the game object.
 
         """
+        logging.debug("new_game called.")
         dw = DigitWord()
+
         dw.random(GameObject.digits_used["normal"])
+        logging.debug("Randomized DigitWord. Value is {}.".format(dw.word))
 
         self._g = GameObject()
         _game = {
@@ -61,6 +65,8 @@ class Game:
             "guesses_remaining": GameObject.guesses_allowed["normal"],
             "guesses_made": 0
         }
+        logging.debug("Game being created: {}".format(_game))
+
         self._g.from_json(jsonstr=json.dumps(_game))
         return self._g.to_json()
 
@@ -75,7 +81,11 @@ class Game:
         :return: None
 
         """
+        logging.debug("load_game called.")
+        logging.debug("Creating empty GameObject.")
         self._g = GameObject()
+
+        logging.debug("Calling from_json with {}.".format(jsonstr))
         self._g.from_json(jsonstr=jsonstr)
 
     def save_game(self):
@@ -86,7 +96,11 @@ class Game:
         :return: A JSON representation of the game object
 
         """
+        logging.debug("save_game called.")
+        logging.debug("Validating game object")
         self._validate_game_object(op="save_game")
+
+        logging.debug("Dumping JSON from GameObject")
         return self._g.to_json()
 
     def guess(self, *args):
@@ -113,7 +127,11 @@ class Game:
         }
 
         """
+        logging.debug("guess called.")
+        logging.debug("Validating game object")
         self._validate_game_object(op="guess")
+
+        logging.debug("Building return object")
         _return_results = {
             "cows": None,
             "bulls": None,
@@ -122,52 +140,80 @@ class Game:
         }
         _start_again = "{0} The correct answer was {1}. Please start a new game."
 
+        logging.debug("Check if game already won, lost, or too many tries.")
         if self._g.status.lower() == "won":
+            logging.debug("Game was already won.")
             _return_results["status"] = _start_again.format(
                 "You already won!",
                 self._g.answer.word
             )
         elif self._g.status.lower() == "lost":
+            logging.debug("Game was already lost.")
             _return_results["status"] = _start_again.format(
                 "You lost (too many guesses)!",
                 self._g.answer.word
             )
         elif self._g.guesses_remaining < 1:
+            logging.debug("No tries left to guess.")
             _return_results["status"] = _start_again.format(
                 "Sorry, you lost!",
                 self._g.answer.word
             )
         elif self._g.ttl < time():
+            logging.debug("Game object ran out of time.")
             _return_results["status"] = _start_again.format(
                 "Sorry, you ran out of time!",
                 self._g.answer.word
             )
         else:
+            logging.debug("Validating guess.")
             self._g.guesses_remaining -= 1
             self._g.guesses_made += 1
+
+            logging.debug("Creating a DigitWord for the guess.")
             guess = DigitWord(*args)
+
+            logging.debug("Initializing return object.")
             _return_results["analysis"] = []
             _return_results["cows"] = 0
             _return_results["bulls"] = 0
 
+            logging.debug("Asking the underlying GameObject to compare itself to the guess.")
             for i in self._g.answer.compare(guess):
+                logging.debug("Iteration of guesses. Processing guess {}".format(i.index))
+
                 if i.match is True:
+                    logging.debug("Bull found. +1")
                     _return_results["bulls"] += 1
                 elif i.in_word is True:
+                    logging.debug("Cow found. +1")
                     _return_results["cows"] += 1
 
+                logging.debug("Add analysis to return object")
                 _return_results["analysis"].append(i.get_object())
 
+            logging.debug("Checking if game won or lost.")
             if _return_results["bulls"] == len(self._g.answer.word):
+                logging.debug("Game was won.")
                 self._g.status = "won"
                 self._g.guesses_remaining = 0
             elif self._g.guesses_remaining < 1:
+                logging.debug("Game was lost.")
                 self._g.status = "lost"
             _return_results["status"] = self._g.status
 
+        logging.debug("Returning results.")
         return _return_results
 
     def _validate_game_object(self, op="unknown"):
+        """
+        A helper method to provide validation of the game object (_g) in one place. If the
+        game object does not exist or if (for any reason) the object is not a GameObject,
+        then an exception will be raised.
+
+        :param op: A string describing the operation (e.g. guess, save, etc.) taking place
+        :return: Nothing
+        """
         if self._g is None:
             raise ValueError(
                 "Game must be instantiated properly before using - call new_game() "
