@@ -67,6 +67,8 @@ class GameObject:
 
     @key.setter
     def key(self, value):
+        if value is None:
+            raise ValueError("Key CANNOT be None")
         self._key = value
 
     @property
@@ -85,12 +87,15 @@ class GameObject:
 
     @ttl.setter
     def ttl(self, value):
+        error_text = "TTL must be a positive integer (>0) representing the number of " \
+                     "seconds from the epoch (time.time()) when the game " \
+                     "object expires!"
+
         if not isinstance(value, int):
-            raise TypeError(
-                "TTL must be an integer representing the number of "
-                "seconds from the epoch (time.time()) when the game "
-                "object expires!"
-            )
+            raise TypeError(error_text)
+        if value < 1:
+            raise ValueError(error_text)
+
         self._ttl = value
 
     @property
@@ -119,6 +124,12 @@ class GameObject:
 
     @guesses_remaining.setter
     def guesses_remaining(self, value):
+        error_text = "Guesses remaining must be a positive integer (>=0) representing the number of " \
+                     "guesses left."
+        if not isinstance(value, int):
+            raise TypeError(error_text)
+        if value < 0:
+            raise ValueError(error_text)
         self._guesses_remaining = value
 
     @property
@@ -127,27 +138,15 @@ class GameObject:
 
     @guesses_made.setter
     def guesses_made(self, value):
+        error_text = "Guesses made must be a positive integer (>=0) representing the number of " \
+                     "guesses made."
+        if not isinstance(value, int):
+            raise TypeError(error_text)
+        if value < 0:
+            raise ValueError(error_text)
         self._guesses_made = value
 
-    def initialize(
-        self,
-        key,
-        status,
-        ttl,
-        answer,
-        mode,
-        guesses_remaining,
-        guesses_made
-    ):
-        self.key = key
-        self.status = status
-        self.ttl = ttl
-        self.answer = answer
-        self.mode = mode
-        self.guesses_remaining = guesses_remaining
-        self.guesses_made = guesses_made
-
-    def dump(self):
+    def to_json(self):
         if self._key is None:
             return_object = {}
         else:
@@ -164,7 +163,7 @@ class GameObject:
 
         return json.dumps(return_object)
 
-    def load(self, jsonstr):
+    def from_json(self, jsonstr):
         if not isinstance(jsonstr, str):
             raise TypeError("Load requires a valid JSON string")
         _temp_dict = json.loads(jsonstr)
