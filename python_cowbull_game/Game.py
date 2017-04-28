@@ -6,12 +6,48 @@ from .GameObject import GameObject
 
 
 class Game:
+    """Game is a class cowbull game where the objective is to guess a sequence of numbers. The
+    numbers are randomly generated and the user is given a number of turns to guess the numbers.
+
+    The game is started by instantiating a game object, g = Game(), and then calling the new
+    game method, g.new_game(). If you run this in the console, you will notice that it returns
+    the complete game object (including the answer) - that's because the Game object is
+    intended to be connected (or interfaced) to a user interface.
+
+    A game object is a JSON structure as follows:
+
+    {
+        "key": {"type": "string"},
+        "status": {"type": "string"},
+        "ttl": {"type": "integer"},
+        "answer": {
+            "type": "array",
+            "items":
+                {
+                    "digit":
+                        {
+                            "type": "integer",
+                            "minimum": 0
+                        }
+                }
+        },
+        "mode": {"type": "string"},
+        "guesses_remaining": {"type": "integer"},
+        "guesses_made": {"type": "integer"}
+    }
+
+    """
     _g = None
 
-    def __init__(self):
-        pass
-
     def new_game(self):
+        """
+        new_game() creates a new game. At version 0.3, the game is set to normal and this
+        will be updated later. The new_game instantiates the object and then allows a number
+        of tries to be made to guess the digits (see guess()).
+
+        :return: JSON String containing the game object.
+
+        """
         dw = DigitWord()
         dw.random(GameObject.digits_used["normal"])
 
@@ -29,14 +65,54 @@ class Game:
         return self._g.to_json()
 
     def load_game(self, jsonstr):
+        """
+        load_game() takes a JSON string representing a game object and calls the underlying
+        game object (_g) to load the JSON. The underlying object will handle schema validation
+        and transformation.
+
+        :param jsonstr: A valid JSON string representing a GameObject (see above)
+
+        :return: None
+
+        """
         self._g = GameObject()
         self._g.from_json(jsonstr=jsonstr)
 
     def save_game(self):
+        """
+        save_game() asks the underlying game object (_g) to dump the contents of
+        itself as JSON and then returns the JSON to
+
+        :return: A JSON representation of the game object
+
+        """
         self._validate_game_object(op="save_game")
         return self._g.to_json()
 
     def guess(self, *args):
+        """
+        guess() allows a guess to be made. Before the guess is made, the method
+        checks to see if the game has been won, lost, or there are no tries
+        remaining. It then creates a return object stating the number of bulls
+        (direct matches), cows (indirect matches), an analysis of the guess (a
+        list of analysis objects), and a status.
+
+        :param args: any number of integers (or string representations of integers)
+        to the number of Digits in the answer; i.e. in normal mode, there would be
+        a DigitWord to guess of 4 digits, so guess would expect guess(1, 2, 3, 4)
+        and a shorter (guess(1, 2)) or longer (guess(1, 2, 3, 4, 5)) sequence will
+        raise an exception.
+
+        :return: a JSON object containing the analysis of the guess:
+
+        {
+            "cows": {"type": "integer"},
+            "bulls": {"type": "integer"},
+            "analysis": {"type": "array of DigitWordAnalysis"},
+            "status": {"type": "string"}
+        }
+
+        """
         self._validate_game_object(op="guess")
         _return_results = {
             "cows": None,

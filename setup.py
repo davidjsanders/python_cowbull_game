@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='python_cowbull_game',
-      version='0.1',
+      version='0.3.1',
       description='Python cowbull game object',
       url='https://github.com/dsandersAzure/python_cowbull_game',
       author='David Sanders',
@@ -10,5 +10,8 @@ setup(name='python_cowbull_game',
       packages=['python_cowbull_game'],
       test_suite='nose.collector',
       tests_require=['nose'],
-      install_requires=['python-digits'],
+      install_requires=[
+          'python-digits',
+          'jsonschema',
+      ],
       zip_safe=False)
