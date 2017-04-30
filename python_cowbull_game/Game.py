@@ -38,7 +38,7 @@ class Game:
     }
 
     """
-    _g = None
+    _g = None   # _g The global game variable
 
     def new_game(self):
         """
