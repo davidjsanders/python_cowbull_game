@@ -40,7 +40,15 @@ class Game:
     """
     _g = None   # _g The global game variable
 
-    def new_game(self):
+    @property
+    def digits_required(self):
+        return self._g.digits_used[self._g.mode]
+
+    @property
+    def guesses_allowed(self):
+        return self._g.guesses_allowed[self._g.mode]
+
+    def new_game(self, mode="normal"):
         """
         new_game() creates a new game. At version 0.3, the game is set to normal and this
         will be updated later. The new_game instantiates the object and then allows a number
@@ -52,7 +60,7 @@ class Game:
         logging.debug("new_game called.")
         dw = DigitWord()
 
-        dw.random(GameObject.digits_used["normal"])
+        dw.random(GameObject.digits_used[mode])
         logging.debug("Randomized DigitWord. Value is {}.".format(dw.word))
 
         self._g = GameObject()
@@ -61,8 +69,8 @@ class Game:
             "status": "playing",
             "ttl": int(time()) + 3600,
             "answer": dw.word,
-            "mode": "normal",
-            "guesses_remaining": GameObject.guesses_allowed["normal"],
+            "mode": mode,
+            "guesses_remaining": GameObject.guesses_allowed[mode],
             "guesses_made": 0
         }
         logging.debug("Game being created: {}".format(_game))
