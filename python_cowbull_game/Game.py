@@ -48,6 +48,10 @@ class Game:
     def guesses_allowed(self):
         return self._g.guesses_allowed[self._g.mode]
 
+    @property
+    def key(self):
+        return self._g.key
+
     def new_game(self, mode="normal"):
         """
         new_game() creates a new game. At version 0.3, the game is set to normal and this
