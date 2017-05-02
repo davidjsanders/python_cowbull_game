@@ -209,9 +209,13 @@ class Game:
                 logging.debug("Game was won.")
                 self._g.status = "won"
                 self._g.guesses_remaining = 0
+                _return_results["message"] = "Well done! You won the game with your " \
+                                             "answers {}".format(self._g.answer.word)
             elif self._g.guesses_remaining < 1:
                 logging.debug("Game was lost.")
                 self._g.status = "lost"
+                _return_results["message"] = "Sorry, you lost! The correct answer was " \
+                                             "{}".format(self._g.answer.word)
             _return_results["status"] = self._g.status
 
         logging.debug("Returning results.")
