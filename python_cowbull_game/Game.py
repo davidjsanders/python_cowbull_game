@@ -6,7 +6,7 @@ from python_digits import DigitWord
 from .GameObject import GameObject
 
 
-class Game:
+class Game(object):
     """Game is a class cowbull game where the objective is to guess a sequence of numbers. The
     numbers are randomly generated and the user is given a number of turns to guess the numbers.
 

@@ -3,7 +3,7 @@ from python_digits import DigitWord
 from jsonschema import validate
 
 
-class GameObject:
+class GameObject(object):
     _key = None
     _status = None
     _ttl = None

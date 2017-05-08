@@ -1,5 +1,6 @@
 import json
 import jsonschema
+import sys
 from unittest import TestCase
 from python_digits import DigitWord
 from ..GameObject import GameObject
@@ -130,7 +131,10 @@ class test_GameObject(TestCase):
         json_string2 = '{"skey": "68b5aea6-0a09-4d60-bed0-43fbf28d1e87", ' \
                        '"guesses_remaining": 10, "guesses_made": 0, "mode": "normal", ' \
                        '"ttl": 1493339159, "status": "playing", "answer": [1, 2, 3, 4]}'
-        with self.assertRaises(json.decoder.JSONDecodeError):
+        exception_to_check = ValueError
+        if sys.version_info[0] > 2:
+            exception_to_check = json.decoder.JSONDecodeError
+        with self.assertRaises(exception_to_check):
             go.from_json(jsonstr='')
         with self.assertRaises(jsonschema.exceptions.ValidationError):
             go.from_json(jsonstr=json_string)
