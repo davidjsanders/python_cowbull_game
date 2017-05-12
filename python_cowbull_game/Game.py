@@ -155,25 +155,25 @@ class Game(object):
         logging.debug("Check if game already won, lost, or too many tries.")
         if self._g.status.lower() == "won":
             logging.debug("Game was already won.")
-            _return_results["status"] = _start_again.format(
+            _return_results["message"] = _start_again.format(
                 "You already won!",
                 self._g.answer.word
             )
         elif self._g.status.lower() == "lost":
             logging.debug("Game was already lost.")
-            _return_results["status"] = _start_again.format(
+            _return_results["message"] = _start_again.format(
                 "You lost (too many guesses)!",
                 self._g.answer.word
             )
         elif self._g.guesses_remaining < 1:
             logging.debug("No tries left to guess.")
-            _return_results["status"] = _start_again.format(
+            _return_results["message"] = _start_again.format(
                 "Sorry, you lost!",
                 self._g.answer.word
             )
         elif self._g.ttl < time():
             logging.debug("Game object ran out of time.")
-            _return_results["status"] = _start_again.format(
+            _return_results["message"] = _start_again.format(
                 "Sorry, you ran out of time!",
                 self._g.answer.word
             )
