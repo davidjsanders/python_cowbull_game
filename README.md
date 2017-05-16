@@ -1,4 +1,9 @@
 # python_cowbull_game
+
+| Warning                                                |
+|--------------------------------------------------------|
+|This documentation is still work in progress - 5/14/17  |
+
 **Version 1.0**
 This is part 2 of a multi-part tutorial. The link for the tutorial will be provided soon.
 This is an open source project and you are welcome to reuse and/or fork it.
