@@ -88,64 +88,38 @@ $ python
 >>> g.new_game(mode) # Mode is one of 'easy', 'normal', or 'hard'
 '{"status": "playing", "guesses_made": 0, "ttl": 1494903060, "mode": "normal",
 "key": "**uuid**", "guesses_remaining": 10, "answer": [6, 1, 4, 7]}'
->>> from python_digits import Digit, DigitWord, DigitWordAnalysis
->>> d = Digit(0) # Creates a digit 0
->>> de = Digit(22) # Raises a ValueError
->>> dw1 = DigitWord() # Creates an *empty* DigitWord
->>> dw2 = DigitWord(1, 4, 7, 2) # Creates a DigitWord containing 1, 4, 7, and 2.
->>> dw3 = DigitWord(4, 1, 8, 0) # Creates a DigitWord containing 4, 1, 8, and 0.
->>> str(dw2) # Returns '1472'
->>> dw2.word # Returns [1, 4, 7, 2]
->>> dw2.compare(dw3) # Returns a list of DigitWordAnalysis objects
+>>> g.guess(1, 2, 3, 4)
+# A dict of the analysis
+>>> g.guess(4, 3, 2, 1)
+>>> g.save_game() # Returns a JSON string for the caller to save
+>>> g.load_game(jsonstr:str) # Loads a game from the JSON string provided
+>>> g.digits_required # Returns the number of digits expected for the mode
+>>> g.guesses_allowed # Returns the number of guesses allowed
+>>> g.key             # Returns the uuid key for the game
 ```
-Try the following code to see what the objects contain:
-```
->>> for i in dw2.compare(dw3):
-...     print(i.index, i.digit, i.match, i.in_word, i.multiple)
-#
-# The results should be
-#
-# 0 4 False True False
-# 1 1 False True False
-# 2 8 False False False
-# 3 0 False False False
-#
-```
-Equality can also be compared. Try the following:
-```
->>> dw4 = DigitWord(1, 2, 3, 4, 5, 6)
->>> dw5 = DigitWord(1, 2, 3, 4, 5, 6)
->>> dw6 = DigitWord(1, 2)
->>> dw7 = DigitWord(6, 5, 4, 3, 2, 1)
->>> dw4 == dw5 # Returns True
->>> dw4 == dw6 # Returns False
->>> dw5 == dw7 # Returns False
-```
-Empty DigitWords can be set to contain a random word:
-```
->>> dw = DigitWord() # Empty DigitWord
->>> dw.random(5) # Create a random word with 5 digits
->>> dw.word # Returns a list of the digits created by the random method
-```
-An end-to-end example is provided below:
-```
->>> from python_digits import Digit, DigitWord
->>> dw = DigitWord()
->>> dw.random(4)
->>> analysis = dw.compare(DigitWord(1, 2, 3, 4))
->>> for a in analysis:
-...     print(a.get_object())
-```
-## Digit class
-Digit - a **subclass** of int designed to store a single digit between 0 and 9. A Digit is
-formed by instantiation and passing integers (or string representation) using the parameter
-value. The value must be between 0 and 9 (e.g. 0, 1, 2, 3, 4, 5, 6, 7, 8, or 9) and will
-raise a ValueError if not. As a subclass of int, the Digit class obeys all integer operations
-such as multiply, add, etc.
+This package is not really designed to be used 'stand-alone'; it is normally
+consumed by a non-human caller, such as a game server.
 
-* Instantiation: ```obj = Digit(value:int)```
-* Methods: ```None```
-* Properties: ```None```
+## Game class
+A Game provides an object representing a cowbull game. The game object tracks the
+DigitWord secret, the guesses, and success or failure. Persistence is handled by
+passing the Game object back and forth as a JSON string, as an external caller
+is expected to provide the persistence layer.
+
+* Instantiation: ```obj = Game()```
+  * ``new_game(mode:str)`` : Start a new game with a new key. The mode is one
+  of easy, normal, or hard. This can be extended (e.g. crazy) by modifying game_modes,
+  digits_used, and guesses_allowed in GameObject.
+  * ``save_game`` : Return a JSON dump of the GameObject.
+  * ``load_game(jsonstr:str)`` : Take a string of dumped JSON and load it into a game
+  object
+  * ``guess(*args)`` : Make a guess with a variable list of Digits
+* Properties:
+  * ``digits_required:int``. Returns the number of Digits expected for a guess (get only)
+  * ``guesses_allowed:int``. Returns the number of guesses allowed for the game (depends
+  upon the game mode) (get only)
+  * ``key:str``. Returns the unique UUID game key.
+
 
 
 ## DigitWord class
