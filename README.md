@@ -107,6 +107,7 @@ passing the Game object back and forth as a JSON string, as an external caller
 is expected to provide the persistence layer.
 
 * Instantiation: ```obj = Game()```
+* Methods:
   * ``new_game(mode:str)`` : Start a new game with a new key. The mode is one
   of easy, normal, or hard. This can be extended (e.g. crazy) by modifying game_modes,
   digits_used, and guesses_allowed in GameObject.
