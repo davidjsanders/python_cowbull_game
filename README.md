@@ -1,10 +1,7 @@
 # python_cowbull_game
 
-| Warning                                                |
-|--------------------------------------------------------|
-|This documentation is still work in progress - 5/14/17  |
-
 **Version 1.0**
+
 This is part 2 of a multi-part tutorial. The link for the tutorial will be provided soon.
 This is an open source project and you are welcome to reuse and/or fork it.
 
@@ -56,14 +53,21 @@ object representing a set of digits to be guessed. If the digit is correct and i
 correct sequence, then it is a bull; if the digit is correct but in the wrong place, then
 it is a cow.
 
+**NOTE** This package is not designed to be consumed by a human at the Python level;
+it is designed to be called by an API style program which will control the interaction
+with the game and another (interface level) app, that will control user interaction. 
+The reason for this is to enforce minimal coupling (a caller does not need to know
+how the game operates) with maximum cohesion (each component does only what it is 
+supposed to do.)
+
 ## Installation
 After forking this repository (or cloning using https), the package can be installed typing
 
 ```pip install .```
 
 and will then be available to your Python environment. Virtualenv is recommended to avoid polluting your
-Python environment. The Python package is also available at
-https://pypi.python.org/pypi?name=python-cowbull-game&:action=display and can be installed using
+Python environment. The Python package is also available at [PyPi](https://pypi.python.org/pypi?name=python-cowbull-game&:action=display)
+and can be installed using
 pip:
 
 ```pip install python_cowbull_game```
@@ -124,39 +128,51 @@ is expected to provide the persistence layer.
 
 
 ## GameObject class
-A DigitWord is a collection of Digit objects (see Digit). The collection can be any size (up to the
-maximum size of a list.) The DigitWord holds each Digit in a list (see word) and DigitWord(s)
-may be checked for equality and compared to another DigitWord providing analysis of the
-matches (true or false), inclusion in the list (true or false, i.e. the number is the DigitWord
-but not in the same position), and if the Digit occurrs more than once (true or false)
+A GameObject is a representation of a game object used to provide the attributes and
+methods related to a game. It takes input and output as JSON and expects a match to a
+specific schema:
 
-* Instantiation: ```obj = DigitWord(*args)``` (a variable, or null, list of integers (or castable types) representing Digits.
+```
+    schema = {
+        "type": "object",
+        "properties":
+            {
+                "key": {"type": "string"},
+                "status": {"type": "string"},
+                "ttl": {"type": "integer"},
+                "answer": {
+                    "type": "array",
+                    "items":
+                        {
+                            "digit":
+                                {
+                                    "type": "integer",
+                                    "minimum": 0
+                                }
+                        }
+                },
+                "mode": {"type": "string"},
+                "guesses_remaining": {"type": "integer"},
+                "guesses_made": {"type": "integer"}
+            }
+    }
+```
+
+* Instantiation: ```obj = GameObject()``` 
 * Methods
-  * ``__str__`` : Provide a string representation of the DigitWord
-  * ``__eq__`` : Provide equality checking
-  * ``__iter__`` : Provide iteration of the DigitWord
-  * ``__len__`` : Provide length (i.e. number of Digits) of the DigitWord
-  * ``dump()`` : return a JSON string representing the list
-  * ``load(value:str)`` : load a JSON string as the value of the DigitWord
-  * ``random(length:int=4)`` : Randomize the contents of the DigitWord
-  * ``compare(other:DigitWord)`` : Compare (analyse) the Digits of another DigitWord against self
+  * ``to_json()`` : Dump the game object to JSON
+  * ``from_json(jsonstr:str)`` : Load the game object from a JSON string
 * Properties
-  * ``word:list``. Returns the Digits in the DigitWord as a list of int
-
-## DigitWordAnalysis class
-A DigitWordAnalysis represents the analysis of a digit compared to the digits within a DigitWord.
-The analysis states the index of the digit (0, 1, 2, etc.), the value of the digit (an integer
-between 0 and 9), whether it matched the exact position in the DigitWord (True or False),
-whether it occurred multiple times (True or False), and whether the digit was in the DigitWord
-or not (True or False).
-
-* Instantiation: ``obj = DigitWordAnalysis(index:int, digit:Digit, match:bool, in_word:bool, multiple: bool)``
-* Methods:
-  * ``get_object()``: Return a dictionary representing the analysis:
-    * {'index': self._index, 'digit': self._digit, 'match': self._match, 'multiple': self._multiple, 'in_word': self._in_word}
-* Properties
-  * ``index: int``
-  * ``digit: int``
-  * ``match: bool``
-  * ``in_word: bool``
-  * ``multiple: bool``
+  * ``game_modes:str`` : A list of allowed modes (easy, normal, hard, etc.).
+  * ``game_states:str`` : A list of game states (playing, won, lost).
+  * ``digits_used:int`` : The number of Digits used in the game (based on mode).
+  * ``guesses_allowed:int`` : The number of guesses allowed for the game mode.
+  * ``key:str`` : A string representation of a UUID 4 word unique identifier.
+  * ``status:str`` : One of game_states above.
+  * ``ttl:int`` : An integer representing the time at which the game key 
+  should expire.
+  * ``answer:DigitWord`` : The solution to the current game
+  * ``mode:str`` : One of game_modes above.
+  * ``guesses_remaining:int`` : The number of guesses left which can be made.
+  * ``guesses_made:int`` : The number of guesses made.
+  * ``schema:dict`` : The schema required for the methods ``to_json`` and ``from_json``.
