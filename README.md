@@ -24,7 +24,7 @@ intended to be connected (or interfaced) to a user interface.
 
 A game object is a JSON structure as follows:
 
-``
+```
     {
         "key": {"type": "string"},
         "status": {"type": "string"},
@@ -44,7 +44,7 @@ A game object is a JSON structure as follows:
         "guesses_remaining": {"type": "integer"},
         "guesses_made": {"type": "integer"}
     }
-``
+```
 
 
 
