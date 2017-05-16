@@ -123,7 +123,7 @@ is expected to provide the persistence layer.
 
 
 
-## DigitWord class
+## GameObject class
 A DigitWord is a collection of Digit objects (see Digit). The collection can be any size (up to the
 maximum size of a list.) The DigitWord holds each Digit in a list (see word) and DigitWord(s)
 may be checked for equality and compared to another DigitWord providing analysis of the
