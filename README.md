@@ -72,10 +72,10 @@ pip:
 When installing the package from source, tests are held in a directory called (unsurprisingly) tests.
 To validate the package, run the tests as follows from the installation directory:
 
-```python -m unittest python_digits.tests```
+```python -m unittest python_cowbull_game.tests```
 
 Add new tests into new files in the tests directory and update __init__.py to import them, then
-tests can be run using the command above. *Hint* Use -v python_digits.tests to see the test results
+tests can be run using the command above. *Hint* Use -v python_cowbull_game.tests to see the test results
 in verbose mode.
 
 ## Usage
@@ -83,6 +83,11 @@ To use the package, do the following steps:
 
 ```
 $ python
+>>> from python_cowbull_game import Game
+>>> g = Game()
+>>> g.new_game(mode) # Mode is one of 'easy', 'normal', or 'hard'
+'{"status": "playing", "guesses_made": 0, "ttl": 1494903060, "mode": "normal",
+"key": "**uuid**", "guesses_remaining": 10, "answer": [6, 1, 4, 7]}'
 >>> from python_digits import Digit, DigitWord, DigitWordAnalysis
 >>> d = Digit(0) # Creates a digit 0
 >>> de = Digit(22) # Raises a ValueError
