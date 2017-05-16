@@ -1,8 +1,2 @@
-appdirs==1.4.3
 jsonschema==2.6.0
-nose==1.3.7
-packaging==16.8
-pyparsing==2.2.0
-python-cowbull-game==0.4.1
-python-digits==0.4.2
-six==1.10.0
+python-digits==1.0
