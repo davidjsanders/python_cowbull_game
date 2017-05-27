@@ -43,7 +43,7 @@ class Game(object):
 
     def __init__(self, game_object=None):
         if game_object is not None:
-            logging.debug("Game: Checking GameObject passed")
+            logging.debug("Game: Checking GameObject passed as type: {}".format(type(game_object)))
             if isinstance(game_object, GameObject):
                 logging.debug("Game: GameObject passed is valid")
                 self.go = game_object
