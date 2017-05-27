@@ -1,6 +1,6 @@
 # python_cowbull_game
 
-**Version 1.0**
+**Version 1.1.2**
 
 This is part 2 of a multi-part tutorial. The link for the tutorial will be provided soon.
 This is an open source project and you are welcome to reuse and/or fork it.
