@@ -13,7 +13,7 @@ class GameObject(object):
     _guesses_made = None
     _last_guess = None
 
-    game_modes = ["easy", "normal", "hard"]
+    game_modes = ["easy", "normal", "hard", "crazy"]
     game_states = ["won", "lost", "playing"]
 
     schema = {
@@ -43,13 +43,15 @@ class GameObject(object):
     digits_used = {
         'easy': 3,
         'normal': 4,
-        'hard': 6
+        'hard': 6,
+        'crazy': 10
     }
 
     guesses_allowed = {
         'easy': 15,
         'normal': 10,
-        'hard': 6
+        'hard': 6,
+        'crazy': 10
     }
 
     def __init__(self):
