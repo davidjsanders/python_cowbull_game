@@ -104,13 +104,43 @@ $ python
 This package is not really designed to be used 'stand-alone'; it is normally
 consumed by a non-human caller, such as a game server.
 
+The version 1.1.2 release adds inheritance, allowing the game object
+to be superclassed and support more modes, for example:
+
+```
+$ python
+>>> from python_cowbull_game import Game
+>>> from python_cowbull_game import GameObject as BaseGO
+>>> class GameObject(BaseGO):
+...     game_modes = ["easy", "normal", "hard", "crazy", "mega"]
+...     digits_used = {
+...         'easy': 3,
+...         'normal': 4,
+...         'hard': 6,
+...         'crazy': 10,
+...         'mega': 5
+...     }
+...     guesses_allowed = {
+...         'easy': 15,
+...         'normal': 10,
+...         'hard': 6,
+...         'crazy': 10,
+...         'mega': 3
+...     }
+...     def __init__(self):
+...         super(GameObject, self).__init__()
+...
+>>> g = Game(game_object=GameObject)
+>>>
+```
+
 ## Game class
 A Game provides an object representing a cowbull game. The game object tracks the
 DigitWord secret, the guesses, and success or failure. Persistence is handled by
 passing the Game object back and forth as a JSON string, as an external caller
 is expected to provide the persistence layer.
 
-* Instantiation: ```obj = Game()```
+* Instantiation: ```obj = Game()``` or ```obj = Game(game_object=GameObject)```
 * Methods:
   * ``new_game(mode:str)`` : Start a new game with a new key. The mode is one
   of easy, normal, or hard. This can be extended (e.g. crazy) by modifying game_modes,
