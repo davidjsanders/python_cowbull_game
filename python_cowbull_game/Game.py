@@ -39,6 +39,14 @@ class Game(object):
 
     """
     _g = None   # _g The global game variable
+    go = GameObject # The GameObject to be used.
+
+    def __init__(self, game_object=None):
+        if game_object is not None:
+            if isinstance(game_object, GameObject):
+                self.go = game_object
+
+        pass
 
     @property
     def digits_required(self):
@@ -64,17 +72,17 @@ class Game(object):
         logging.debug("new_game called.")
         dw = DigitWord()
 
-        dw.random(GameObject.digits_used[mode])
+        dw.random(self.go.digits_used[mode])
         logging.debug("Randomized DigitWord. Value is {}.".format(dw.word))
 
-        self._g = GameObject()
+        self._g = self.go()
         _game = {
             "key": str(uuid.uuid4()),
             "status": "playing",
             "ttl": int(time()) + 3600,
             "answer": dw.word,
             "mode": mode,
-            "guesses_remaining": GameObject.guesses_allowed[mode],
+            "guesses_remaining": self.go.guesses_allowed[mode],
             "guesses_made": 0
         }
         logging.debug("Game being created: {}".format(_game))
@@ -95,7 +103,7 @@ class Game(object):
         """
         logging.debug("load_game called.")
         logging.debug("Creating empty GameObject.")
-        self._g = GameObject()
+        self._g = self.go()
 
         logging.debug("Calling from_json with {}.".format(jsonstr))
         self._g.from_json(jsonstr=jsonstr)
