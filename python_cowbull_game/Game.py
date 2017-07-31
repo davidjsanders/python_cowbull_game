@@ -188,37 +188,16 @@ class Game(object):
             "analysis": [],
             "status": ""
         }
-#        _start_again = "{0} The correct answer was {1}. Please start a new game."
 
         logging.debug("Check if game already won, lost, or too many tries.")
         if self._g.status.lower() == "won":
             _return_results["message"] = self._start_again("You already won!")
-#            logging.debug("Game was already won.")
-#            _return_results["message"] = _start_again.format(
-#                "You already won!",
-#                self._g.answer.word
-#            )
         elif self._g.status.lower() == "lost":
             _return_results["message"] = self._start_again("You have made too many guesses, you lost!")
-#            logging.debug("Game was already lost.")
-#            _return_results["message"] = _start_again.format(
-#                "You lost (too many guesses)!",
-#                self._g.answer.word
-#            )
         elif self._g.guesses_remaining < 1:
             _return_results["message"] = self._start_again("You have run out of tries, sorry!")
-#            logging.debug("No tries left to guess.")
-#            _return_results["message"] = _start_again.format(
-#                "Sorry, you lost!",
-#                self._g.answer.word
-#            )
         elif self._g.ttl < time():
             _return_results["message"] = self._start_again("Sorry, you ran out of time to complete the puzzle!")
-#            logging.debug("Game object ran out of time.")
-#            _return_results["message"] = _start_again.format(
-#                "Sorry, you ran out of time!",
-#                self._g.answer.word
-#            )
         else:
             logging.debug("Validating guess.")
             self._g.guesses_remaining -= 1
@@ -265,9 +244,10 @@ class Game(object):
 
     def _start_again(self, message=None):
         logging.debug("Start again message delivered: {}".format(message))
+        the_answer = ', '.join([str(i) for i in self._g.answer.word])
         return "{0} The correct answer was {1}. Please start a new game.".format(
             message,
-            self._g.answer.word
+            the_answer
         )
 
     def _validate_game_object(self, op="unknown"):
