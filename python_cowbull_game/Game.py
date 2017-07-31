@@ -73,8 +73,8 @@ class Game(object):
             _mode = mode
 
         # Validate game mode
-        if mode not in self.go.game_modes:
-            raise ValueError('The mode passed ({}) is not supported.')
+        if _mode not in self.go.game_modes:
+            raise ValueError('The mode passed ({}) is not supported.'.format(_mode))
 
         logging.debug("new_game called.")
         dw = DigitWord()
