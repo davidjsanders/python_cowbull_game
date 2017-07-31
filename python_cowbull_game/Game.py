@@ -199,12 +199,12 @@ class Game(object):
         elif self._g.ttl < time():
             _return_results["message"] = self._start_again("Sorry, you ran out of time to complete the puzzle!")
         else:
+            logging.debug("Creating a DigitWord for the guess.")
+            guess = DigitWord(*args)
+
             logging.debug("Validating guess.")
             self._g.guesses_remaining -= 1
             self._g.guesses_made += 1
-
-            logging.debug("Creating a DigitWord for the guess.")
-            guess = DigitWord(*args)
 
             logging.debug("Initializing return object.")
             _return_results["analysis"] = []
@@ -243,8 +243,10 @@ class Game(object):
         return _return_results
 
     def _start_again(self, message=None):
+        """Simple method to form a start again message and give the answer in readable form."""
         logging.debug("Start again message delivered: {}".format(message))
         the_answer = ', '.join([str(i) for i in self._g.answer.word])
+
         return "{0} The correct answer was {1}. Please start a new game.".format(
             message,
             the_answer
