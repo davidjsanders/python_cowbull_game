@@ -58,7 +58,7 @@ class Game(object):
     def key(self):
         return self._g.key
 
-    def new_game(self, mode="normal"):
+    def new_game(self, mode=None):
         """
         new_game() creates a new game. At version 0.3, the game is set to normal and this
         will be updated later. The new_game instantiates the object and then allows a number
@@ -67,10 +67,15 @@ class Game(object):
         :return: JSON String containing the game object.
 
         """
+        if not mode:
+            _mode = "normal"
+        else:
+            _mode = mode
+
         logging.debug("new_game called.")
         dw = DigitWord()
 
-        dw.random(self.go.digits_used[mode])
+        dw.random(self.go.digits_used[_mode])
         logging.debug("Randomized DigitWord. Value is {}.".format(dw.word))
 
         self._g = self.go()
@@ -79,8 +84,8 @@ class Game(object):
             "status": "playing",
             "ttl": int(time()) + 3600,
             "answer": dw.word,
-            "mode": mode,
-            "guesses_remaining": self.go.guesses_allowed[mode],
+            "mode": _mode,
+            "guesses_remaining": self.go.guesses_allowed[_mode],
             "guesses_made": 0
         }
         logging.debug("Game being created: {}".format(_game))
