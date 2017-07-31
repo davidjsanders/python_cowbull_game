@@ -72,6 +72,10 @@ class Game(object):
         else:
             _mode = mode
 
+        # Validate game mode
+        if mode not in self.go.game_modes:
+            raise ValueError('The mode passed ({}) is not supported.')
+
         logging.debug("new_game called.")
         dw = DigitWord()
 
@@ -125,38 +129,6 @@ class Game(object):
 
         logging.debug("Dumping JSON from GameObject")
         return self._g.to_json()
-
-    def rf_guess(self, *args):
-        """
-        guess() allows a guess to be made. Before the guess is made, the method
-        checks to see if the game has been won, lost, or there are no tries
-        remaining. It then creates a return object stating the number of bulls
-        (direct matches), cows (indirect matches), an analysis of the guess (a
-        list of analysis objects), and a status.
-
-        :param args: any number of integers (or string representations of integers)
-        to the number of Digits in the answer; i.e. in normal mode, there would be
-        a DigitWord to guess of 4 digits, so guess would expect guess(1, 2, 3, 4)
-        and a shorter (guess(1, 2)) or longer (guess(1, 2, 3, 4, 5)) sequence will
-        raise an exception.
-
-        :return: a JSON object containing the analysis of the guess:
-
-        {
-            "cows": {"type": "integer"},
-            "bulls": {"type": "integer"},
-            "analysis": {"type": "array of DigitWordAnalysis"},
-            "status": {"type": "string"}
-        }
-
-        """
-        self._validate_game_object(op="guess")
-        _return_results = {
-            "cows": None,
-            "bulls": None,
-            "analysis": [],
-            "status": ""
-        }
 
     def guess(self, *args):
         """
