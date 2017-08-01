@@ -208,12 +208,12 @@ class Game(object):
                 self._g.status = "won"
                 self._g.guesses_remaining = 0
                 _return_results["message"] = "Well done! You won the game with your " \
-                                             "answers {}".format(self._g.answer.word)
+                                             "answers {}".format(self._get_text_answer())
             elif self._g.guesses_remaining < 1:
                 logging.debug("Game was lost.")
                 self._g.status = "lost"
                 _return_results["message"] = "Sorry, you lost! The correct answer was " \
-                                             "{}".format(self._g.answer.word)
+                                             "{}".format(self._get_text_answer())
             _return_results["status"] = self._g.status
 
         logging.debug("Returning results.")
@@ -222,12 +222,15 @@ class Game(object):
     def _start_again(self, message=None):
         """Simple method to form a start again message and give the answer in readable form."""
         logging.debug("Start again message delivered: {}".format(message))
-        the_answer = ', '.join([str(i) for i in self._g.answer.word])
+        the_answer = self._get_text_answer()
 
         return "{0} The correct answer was {1}. Please start a new game.".format(
             message,
             the_answer
         )
+
+    def _get_text_answer(self):
+        return ', '.join([str(i) for i in self._g.answer.word])
 
     def _validate_game_object(self, op="unknown"):
         """
