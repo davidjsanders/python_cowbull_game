@@ -1,2 +1,2 @@
 jsonschema==2.6.0
-python-digits==1.0
+python-digits==2.0
