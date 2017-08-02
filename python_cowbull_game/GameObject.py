@@ -13,7 +13,7 @@ class GameObject(object):
     _guesses_made = None
     _last_guess = None
 
-    game_modes = ["easy", "normal", "hard"]
+    game_modes = ["easy", "normal", "hard", "hex"]
     game_states = ["won", "lost", "playing"]
 
     schema = {
@@ -43,13 +43,15 @@ class GameObject(object):
     digits_used = {
         'easy': 3,
         'normal': 4,
-        'hard': 6
+        'hard': 6,
+        'hex': 4
     }
 
     guesses_allowed = {
         'easy': 15,
         'normal': 10,
-        'hard': 6
+        'hard': 6,
+        'hex': 10
     }
 
     def __init__(self):
@@ -178,8 +180,15 @@ class GameObject(object):
         self.key = _temp_dict["key"]
         self.status = _temp_dict["status"]
         self.ttl = _temp_dict["ttl"]
-        # Create a DigitWord based on the array of integers passed in the JSON
-        self.answer = DigitWord(*_temp_dict["answer"])
+
         self.mode = _temp_dict["mode"]
+
+        # Create a DigitWord based on the array of integers passed in the JSON
+        if self.mode.lower() == 'hex':
+            _wordtype = DigitWord.HEXDIGIT
+        else:
+            _wordtype = DigitWord.DIGIT
+        self.answer = DigitWord(*_temp_dict["answer"], wordtype=_wordtype)
+
         self.guesses_remaining = _temp_dict["guesses_remaining"]
         self.guesses_made = _temp_dict["guesses_made"]

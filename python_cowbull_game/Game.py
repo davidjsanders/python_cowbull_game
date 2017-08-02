@@ -77,7 +77,10 @@ class Game(object):
             raise ValueError('The mode passed ({}) is not supported.'.format(_mode))
 
         logging.debug("new_game called.")
-        dw = DigitWord()
+        if _mode.lower() == 'hex':
+            dw = DigitWord(wordtype=DigitWord.HEXDIGIT)
+        else:
+            dw = DigitWord(wordtype=DigitWord.DIGIT)
 
         dw.random(self.go.digits_used[_mode])
         logging.debug("Randomized DigitWord. Value is {}.".format(dw.word))
@@ -177,7 +180,9 @@ class Game(object):
             _return_results["message"] = self._start_again("Sorry, you ran out of time to complete the puzzle!")
         else:
             logging.debug("Creating a DigitWord for the guess.")
-            guess = DigitWord(*args)
+
+            _wordtype = DigitWord.HEXDIGIT if self._g.mode.lower() == 'hex' else DigitWord.DIGIT
+            guess = DigitWord(*args, wordtype=_wordtype)
 
             logging.debug("Validating guess.")
             self._g.guesses_remaining -= 1
