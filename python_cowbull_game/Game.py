@@ -15,36 +15,17 @@ class Game(object):
     the complete game object (including the answer) - that's because the Game object is
     intended to be connected (or interfaced) to a user interface.
 
-    A game object is a JSON structure as follows:
-
-    {
-        "key": {"type": "string"},
-        "status": {"type": "string"},
-        "ttl": {"type": "integer"},
-        "answer": {
-            "type": "array",
-            "items":
-                {
-                    "digit":
-                        {
-                            "type": "integer",
-                            "minimum": 0
-                        }
-                }
-        },
-        "mode": {"type": "string"},
-        "guesses_remaining": {"type": "integer"},
-        "guesses_made": {"type": "integer"}
-    }
-
+    A game object is a JSON structure which is defined in GameObject.py
     """
-    _g = None   # _g The global game variable
-    go = GameObject # The GameObject to be used.
-
     def __init__(self, game_object=None):
+        self._g = None  # _g The global game variable
+
         if game_object is not None:
             logging.debug("Game: GameObject passed so inheritance being used")
-            self.go = game_object
+
+    #
+    # Properties
+    #
 
     @property
     def digits_required(self):
@@ -58,41 +39,49 @@ class Game(object):
     def key(self):
         return self._g.key
 
+    @property
+    def game_modes(self):
+        return GameObject().game_modes
+
+    #
+    # Public Methods
+    #
+
     def new_game(self, mode=None):
         """
-        new_game() creates a new game. At version 0.3, the game is set to normal and this
-        will be updated later. The new_game instantiates the object and then allows a number
-        of tries to be made to guess the digits (see guess()).
+        new_game() creates a new game. Docs TBC.
 
         :return: JSON String containing the game object.
 
         """
-        if not mode:
-            _mode = "normal"
-        else:
-            _mode = mode
+
+        # Create a placeholder Game object
+        self._g = GameObject()
 
         # Validate game mode
-        if _mode not in self.go.game_modes:
+        _mode = mode or "normal"
+        logging.debug("new_game: requesting mode {}".format(_mode))
+
+        mode_info = self._g.get_game_type(gametype=_mode)
+        logging.debug("mode_info: {} (Type: {})".format(mode_info, type(mode_info)))
+
+        if not mode_info:
+            self._g = None
             raise ValueError('The mode passed ({}) is not supported.'.format(_mode))
 
-        logging.debug("new_game called.")
-        if _mode.lower() == 'hex':
-            dw = DigitWord(wordtype=DigitWord.HEXDIGIT)
-        else:
-            dw = DigitWord(wordtype=DigitWord.DIGIT)
+        logging.debug("Creating a DigitWord (type {})".format(mode_info.digitType))
+        dw = DigitWord(wordtype=mode_info.digitType)
+        dw.random(mode_info.digits)
 
-        dw.random(self.go.digits_used[_mode])
         logging.debug("Randomized DigitWord. Value is {}.".format(dw.word))
 
-        self._g = self.go()
         _game = {
             "key": str(uuid.uuid4()),
             "status": "playing",
             "ttl": int(time()) + 3600,
             "answer": dw.word,
             "mode": _mode,
-            "guesses_remaining": self.go.guesses_allowed[_mode],
+            "guesses_remaining": mode_info.guesses_allowed,
             "guesses_made": 0
         }
         logging.debug("Game being created: {}".format(_game))
@@ -113,7 +102,7 @@ class Game(object):
         """
         logging.debug("load_game called.")
         logging.debug("Creating empty GameObject.")
-        self._g = self.go()
+        self._g = GameObject()
 
         logging.debug("Calling from_json with {}.".format(jsonstr))
         self._g.from_json(jsonstr=jsonstr)
@@ -224,6 +213,10 @@ class Game(object):
         logging.debug("Returning results.")
         return _return_results
 
+    #
+    # 'private' methods
+    #
+
     def _start_again(self, message=None):
         """Simple method to form a start again message and give the answer in readable form."""
         logging.debug("Start again message delivered: {}".format(message))
@@ -239,7 +232,7 @@ class Game(object):
 
     def _validate_game_object(self, op="unknown"):
         """
-        A helper method to provide validation of the game object (_g) in one place. If the
+        A helper method to provide validation of the game object (_g). If the
         game object does not exist or if (for any reason) the object is not a GameObject,
         then an exception will be raised.
 

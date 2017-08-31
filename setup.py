@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='python_cowbull_game',
-      version='1.1.7',
+      version='2.0',
       description='Python cowbull game object',
       url='https://github.com/dsandersAzure/python_cowbull_game',
       author='David Sanders',

@@ -1,4 +1,5 @@
 import jsonschema
+import json
 from time import time
 from unittest import TestCase
 
@@ -16,6 +17,12 @@ class test_Game(TestCase):
     def test_game_new_game(self):
         key = self.go.new_game()
         self.assertIsInstance(key, str)
+        keydict = json.loads(key)
+        self.assertTrue('key' in keydict)
+
+    def test_game_bad_mode(self):
+        with self.assertRaises(ValueError):
+            key = self.go.new_game(mode="hardishgibberish")
 
     def test_game_guess_lost(self):
         json_string = '{"key": "68b5aea6-0a09-4d60-bed0-43fbf28d1e87", ' \

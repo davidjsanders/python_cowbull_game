@@ -1,6 +1,7 @@
 import json
 from python_digits import DigitWord
 from jsonschema import validate
+from python_cowbull_game.GameMode import GameMode
 
 
 class GameObject(object):
@@ -13,10 +14,12 @@ class GameObject(object):
     _guesses_made = None
     _last_guess = None
 
+    easy_mode = GameMode(mode="easy", digits=3, digitType=DigitWord.DIGIT, guesses_allowed=15)
+    normal_mode = GameMode(mode="normal", digits=4, digitType=DigitWord.DIGIT, guesses_allowed=10)
+    default_mode = normal_mode
+    hard_mode = GameMode(mode="hard", digits=6, digitType=DigitWord.DIGIT, guesses_allowed=6)
+    hex_mode = GameMode(mode="hex", digits=4, digitType=DigitWord.HEXDIGIT, guesses_allowed=10)
 
-    game_types = []
-
-    game_modes = ["easy", "normal", "hard", "hex"]
     game_states = ["won", "lost", "playing"]
 
     schema = {
@@ -65,6 +68,20 @@ class GameObject(object):
         self._mode = None
         self._guesses_remaining = None
         self._guesses_made = None
+
+        self._game_types = {
+            "easy": GameObject.easy_mode,
+            "normal": GameObject.normal_mode,
+            "hard": GameObject.hard_mode,
+            "hex": GameObject.hex_mode,
+            "default": GameObject.normal_mode
+        }
+
+        self.game_modes = [self._game_types[gt].mode for gt in self._game_types]
+
+    @property
+    def game_types(self):
+        return self._game_types
 
     @property
     def key(self):
@@ -167,6 +184,16 @@ class GameObject(object):
                 }
 
         return json.dumps(return_object)
+
+    def get_game_type(self, gametype=None):
+        if gametype is None:
+            raise ValueError("get_game_type: Gametype cannot be None.")
+
+        return_list = [self._game_types[gt] for gt in self._game_types if gt == gametype]
+        if len(return_list) > 0:
+            return_list = return_list[0]
+
+        return return_list
 
     def from_json(self, jsonstr):
         if not isinstance(jsonstr, str):
