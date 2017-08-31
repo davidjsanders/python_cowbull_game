@@ -13,6 +13,9 @@ class GameObject(object):
     _guesses_made = None
     _last_guess = None
 
+
+    game_types = []
+
     game_modes = ["easy", "normal", "hard", "hex"]
     game_states = ["won", "lost", "playing"]
 
