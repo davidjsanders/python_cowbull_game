@@ -29,10 +29,12 @@ class Game(object):
 
     @property
     def digits_required(self):
+        self._validate_game_object(op="digits_required")
         return self._g.game_types[self._g.mode].digits
 
     @property
     def guesses_allowed(self):
+        self._validate_game_object(op="guesses_allowed")
         return self._g.game_types[self._g.mode].guesses_allowed
 
     @property

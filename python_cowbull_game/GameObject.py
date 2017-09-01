@@ -55,14 +55,6 @@ class GameObject(object):
         self.game_modes = [self._game_types[gt].mode for gt in self._game_types]
 
     @property
-    def digits_required(self):
-        return self._game_types[self._mode].digits
-
-    @property
-    def guesses_allowed(self):
-        return self._game_types[self._mode].guesses_allowed
-
-    @property
     def game_types(self):
         return self._game_types
 
