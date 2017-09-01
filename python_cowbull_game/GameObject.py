@@ -5,18 +5,8 @@ from python_cowbull_game.GameMode import GameMode
 
 
 class GameObject(object):
-    _key = None
-    _status = None
-    _ttl = None
-    _answer = None
-    _mode = None
-    _guesses_remaining = None
-    _guesses_made = None
-    _last_guess = None
-
     easy_mode = GameMode(mode="easy", digits=3, digitType=DigitWord.DIGIT, guesses_allowed=15)
     normal_mode = GameMode(mode="normal", digits=4, digitType=DigitWord.DIGIT, guesses_allowed=10)
-    default_mode = normal_mode
     hard_mode = GameMode(mode="hard", digits=6, digitType=DigitWord.DIGIT, guesses_allowed=6)
     hex_mode = GameMode(mode="hex", digits=4, digitType=DigitWord.HEXDIGIT, guesses_allowed=10)
 
@@ -46,20 +36,6 @@ class GameObject(object):
             }
     }
 
-    digits_used = {
-        'easy': 3,
-        'normal': 4,
-        'hard': 6,
-        'hex': 4
-    }
-
-    guesses_allowed = {
-        'easy': 15,
-        'normal': 10,
-        'hard': 6,
-        'hex': 10
-    }
-
     def __init__(self):
         self._key = None
         self._status = None
@@ -74,10 +50,17 @@ class GameObject(object):
             "normal": GameObject.normal_mode,
             "hard": GameObject.hard_mode,
             "hex": GameObject.hex_mode,
-            "default": GameObject.normal_mode
         }
 
         self.game_modes = [self._game_types[gt].mode for gt in self._game_types]
+
+    @property
+    def digits_required(self):
+        return self._game_types[self._mode].digits
+
+    @property
+    def guesses_allowed(self):
+        return self._game_types[self._mode].guesses_allowed
 
     @property
     def game_types(self):

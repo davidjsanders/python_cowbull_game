@@ -29,11 +29,11 @@ class Game(object):
 
     @property
     def digits_required(self):
-        return self._g.digits_used[self._g.mode]
+        return self._g.game_types[self._g.mode].digits
 
     @property
     def guesses_allowed(self):
-        return self._g.guesses_allowed[self._g.mode]
+        return self._g.game_types[self._g.mode].guesses_allowed
 
     @property
     def key(self):
