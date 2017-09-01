@@ -23,7 +23,7 @@ class GameController(object):
             }
     }
 
-    def __init__(self, game: str=None):
+    def __init__(self, game):
         """Initialize the Game."""
         super(GameController, self).__init__()
         self._game_modes = [
