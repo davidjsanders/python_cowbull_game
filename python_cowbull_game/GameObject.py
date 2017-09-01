@@ -10,7 +10,7 @@ class GameObject(object):
 
     game_states = [GAME_WON, GAME_LOST, GAME_PLAYING]
 
-    def __init__(self, game_mode=None, source_dict: dict=None):
+    def __init__(self, game_mode=None, source_dict=None):
         self._validate_game_mode(game_mode)
 
         if source_dict:
