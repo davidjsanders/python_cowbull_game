@@ -9,14 +9,14 @@ class GameMode(object):
             "mode": None,
             "digits": None,
             "digitType": None,
-            "guesses_allowed": None,
+            "guesses": None,
             "instructions": None,
             "help": None
         }
         self._kw_handler(keyword="mode", required=True, datatype=str, **kwargs)
         self._kw_handler(keyword="digits", required=True, default=4, datatype=int, **kwargs)
         self._kw_handler(keyword="digitType", required=False, default=0, datatype=int, **kwargs)
-        self._kw_handler(keyword="guesses_allowed", required=False, default=4, datatype=int, **kwargs)
+        self._kw_handler(keyword="guesses", required=False, default=4, datatype=int, **kwargs)
         self._kw_handler(keyword="instructions", required=False, datatype=str, **kwargs)
         self._kw_handler(keyword="help", required=False, datatype=str, **kwargs)
 
@@ -27,7 +27,7 @@ class GameMode(object):
         return "Mode: {}, ".format(self._data["mode"])+ \
                "digits: {}, ".format(self._data["digits"])+ \
                "type: {}, ".format(self._data["digitType"])+ \
-               "guesses: {}, ".format(self._data["guesses_allowed"])+ \
+               "guesses: {}, ".format(self._data["guesses"])+ \
                "instructions available: {}, ".format(self._data["instructions"] is not None)+ \
                "help available: {}".format(self._data["help"] is not None)
 

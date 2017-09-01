@@ -35,7 +35,7 @@ class Game(object):
     @property
     def guesses_allowed(self):
         self._validate_game_object(op="guesses_allowed")
-        return self._g.game_types[self._g.mode].guesses_allowed
+        return self._g.game_types[self._g.mode].guesses
 
     @property
     def key(self):
@@ -84,7 +84,7 @@ class Game(object):
             "ttl": int(time()) + 3600,
             "answer": dw.word,
             "mode": _mode,
-            "guesses_remaining": mode_info.guesses_allowed,
+            "guesses_remaining": mode_info.guesses,
             "guesses_made": 0
         }
         logging.debug("Game being created: {}".format(_game))

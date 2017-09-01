@@ -5,10 +5,10 @@ from python_cowbull_game.GameMode import GameMode
 
 
 class GameObject(object):
-    easy_mode = GameMode(mode="easy", digits=3, digitType=DigitWord.DIGIT, guesses_allowed=15)
-    normal_mode = GameMode(mode="normal", digits=4, digitType=DigitWord.DIGIT, guesses_allowed=10)
-    hard_mode = GameMode(mode="hard", digits=6, digitType=DigitWord.DIGIT, guesses_allowed=6)
-    hex_mode = GameMode(mode="hex", digits=4, digitType=DigitWord.HEXDIGIT, guesses_allowed=10)
+    easy_mode = GameMode(mode="easy", digits=3, digitType=DigitWord.DIGIT, guesses=15)
+    normal_mode = GameMode(mode="normal", digits=4, digitType=DigitWord.DIGIT, guesses=10)
+    hard_mode = GameMode(mode="hard", digits=6, digitType=DigitWord.DIGIT, guesses=6)
+    hex_mode = GameMode(mode="hex", digits=4, digitType=DigitWord.HEXDIGIT, guesses=10)
 
     game_states = ["won", "lost", "playing"]
 
