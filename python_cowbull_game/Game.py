@@ -39,6 +39,7 @@ class Game(object):
 
     @property
     def key(self):
+        self._validate_game_object(op="key")
         return self._g.key
 
     @property
