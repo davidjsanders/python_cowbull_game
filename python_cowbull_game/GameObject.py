@@ -1,72 +1,45 @@
-import json
+import uuid
 from python_digits import DigitWord
-from jsonschema import validate
 from python_cowbull_game.GameMode import GameMode
 
 
 class GameObject(object):
-    easy_mode = GameMode(mode="easy", digits=3, digitType=DigitWord.DIGIT, guesses=15)
-    normal_mode = GameMode(mode="normal", digits=4, digitType=DigitWord.DIGIT, guesses=10)
-    hard_mode = GameMode(mode="hard", digits=6, digitType=DigitWord.DIGIT, guesses=6)
-    hex_mode = GameMode(mode="hex", digits=4, digitType=DigitWord.HEXDIGIT, guesses=10)
+    GAME_WON = "won"
+    GAME_PLAYING = "playing"
+    GAME_LOST = "lost"
 
-    game_states = ["won", "lost", "playing"]
+    game_states = [GAME_WON, GAME_LOST, GAME_PLAYING]
 
-    schema = {
-        "type": "object",
-        "properties":
-            {
-                "key": {"type": "string"},
-                "status": {"type": "string"},
-                "ttl": {"type": "integer"},
-                "answer": {
-                    "type": "array",
-                    "items":
-                        {
-                            "digit":
-                                {
-                                    "type": "integer",
-                                    "minimum": 0
-                                }
-                        }
-                },
-                "mode": {"type": "string"},
-                "guesses_remaining": {"type": "integer"},
-                "guesses_made": {"type": "integer"}
-            }
-    }
+    def __init__(self, game_mode: GameMode=None, source_dict: dict=None):
+        self._validate_game_mode(game_mode)
 
-    def __init__(self):
-        self._key = None
-        self._status = None
-        self._ttl = None
-        self._answer = None
-        self._mode = None
-        self._guesses_remaining = None
-        self._guesses_made = None
+        if source_dict:
+            self.from_dict(source_dict=source_dict, game_mode=game_mode)
+        else:
+            dw = DigitWord(wordtype=game_mode.digit_type)
+            dw.random(game_mode.digits)
+            self._key = str(uuid.uuid4())
+            self._status = self.GAME_PLAYING
+            self._ttl = 3600
+            self._answer = dw
+            self._mode = game_mode.mode
+            self._guesses_remaining = game_mode.guesses_allowed
+            self._guesses_made = 0
 
-        self._game_types = {
-            "easy": GameObject.easy_mode,
-            "normal": GameObject.normal_mode,
-            "hard": GameObject.hard_mode,
-            "hex": GameObject.hex_mode,
-        }
-
-        self.game_modes = [self._game_types[gt].mode for gt in self._game_types]
-
+    #
+    # Properties
+    #
     @property
-    def game_types(self):
-        return self._game_types
+    def mode(self):
+        return self._mode
 
     @property
     def key(self):
         return self._key
 
-    @key.setter
-    def key(self, value):
-        if value is None:
-            raise ValueError("Key CANNOT be None")
-        self._key = value
+    @property
+    def ttl(self):
+        return self._ttl
 
     @property
     def status(self):
@@ -74,46 +47,9 @@ class GameObject(object):
 
     @status.setter
     def status(self, value):
-        if value.lower() not in self.game_states:
-            raise ValueError("Status can only be one of: {}".format(self.game_states))
+        if not value in self.game_states:
+            raise ValueError("Game status must be set to one of: {}".format(self.game_states))
         self._status = value
-
-    @property
-    def ttl(self):
-        return self._ttl
-
-    @ttl.setter
-    def ttl(self, value):
-        error_text = "TTL must be a positive integer (>0) representing the number of " \
-                     "seconds from the epoch (time.time()) when the game " \
-                     "object expires!"
-
-        if not isinstance(value, int):
-            raise TypeError(error_text)
-        if value < 1:
-            raise ValueError(error_text)
-
-        self._ttl = value
-
-    @property
-    def answer(self):
-        return self._answer
-
-    @answer.setter
-    def answer(self, value):
-        if not isinstance(value, DigitWord):
-            raise TypeError("Answer must be a DigitWord")
-        self._answer = value
-
-    @property
-    def mode(self):
-        return self._mode
-
-    @mode.setter
-    def mode(self, value):
-        if value not in self.game_modes:
-            raise ValueError("Mode must be one of : {}".format(self.game_modes))
-        self._mode = value
 
     @property
     def guesses_remaining(self):
@@ -121,12 +57,13 @@ class GameObject(object):
 
     @guesses_remaining.setter
     def guesses_remaining(self, value):
-        error_text = "Guesses remaining must be a positive integer (>=0) representing the number of " \
-                     "guesses left."
+        ex_msg = "Guesses remaining must be an integer, greater than or equal to zero."
+
         if not isinstance(value, int):
-            raise TypeError(error_text)
+            raise TypeError(ex_msg)
         if value < 0:
-            raise ValueError(error_text)
+            raise ValueError(ex_msg)
+
         self._guesses_remaining = value
 
     @property
@@ -135,65 +72,56 @@ class GameObject(object):
 
     @guesses_made.setter
     def guesses_made(self, value):
-        error_text = "Guesses made must be a positive integer (>=0) representing the number of " \
-                     "guesses made."
+        ex_msg = "Guesses made must be an integer, greater than or equal to zero."
+
         if not isinstance(value, int):
-            raise TypeError(error_text)
+            raise TypeError(ex_msg)
         if value < 0:
-            raise ValueError(error_text)
+            raise ValueError(ex_msg)
+
         self._guesses_made = value
 
-    def to_json(self):
-        if self._key is None:
-            return_object = {}
-        else:
-            return_object = \
-                {
-                    "key": self._key,
-                    "status": self._status,
-                    "ttl": self._ttl,
-                    "answer": self._answer.word,
-                    "mode": self._mode,
-                    "guesses_remaining": self._guesses_remaining,
-                    "guesses_made": self._guesses_made
-                }
+    @property
+    def answer(self):
+        return self._answer
 
-        return json.dumps(return_object)
+    @property
+    def answer_str(self):
+        return ', '.join(str(d) for d in self._answer.word)
 
-    def get_game_type(self, gametype=None):
-        if gametype is None:
-            raise ValueError("get_game_type: Gametype cannot be None.")
+    #
+    # 'public' methods
+    #
+    def to_dict(self):
+        return {
+            "key": self._key,
+            "status": self._status,
+            "ttl": self._ttl,
+            "answer": self._answer.word,
+            "mode": self._mode,
+            "guesses_remaining": self._guesses_remaining,
+            "guesses_made": self._guesses_made
+        }
 
-        return_list = [self._game_types[gt] for gt in self._game_types if gt == gametype]
-        if len(return_list) > 0:
-            return_list = return_list[0]
+    def from_dict(self, source_dict=None, game_mode=None):
+        self._validate_game_mode(game_mode)
+        if not source_dict:
+            raise ValueError("A valid dictionary must be passed as the source_dict")
+        if not isinstance(source_dict, dict):
+            raise TypeError("A valid dictionary must be passed as the source_dict. {} given.".format(type(source_dict)))
 
-        return return_list
+        required_keys = ("key", "status", "ttl", "answer", "mode", "guesses_remaining", "guesses_made")
+        if not all(key in source_dict for key in required_keys):
+            raise ValueError("The dictionary passed is malformed: {}".format(source_dict))
 
-    def from_json(self, jsonstr):
-        if not isinstance(jsonstr, str):
-            raise TypeError("Load requires a valid JSON string")
-        _temp_dict = json.loads(jsonstr)
+        self._key = source_dict["key"]
+        self._status = source_dict["status"]
+        self._ttl = source_dict["ttl"]
+        self._answer = DigitWord(*source_dict["answer"], wordtype=game_mode.digit_type)
+        self._mode = source_dict["mode"]
+        self._guesses_remaining = source_dict["guesses_remaining"]
+        self._guesses_made = source_dict["guesses_made"]
 
-        if _temp_dict == {}:
-            self._key = None
-            return
-
-        # Validate the dictionary object against the schema
-        validate(_temp_dict, self.schema)
-
-        self.key = _temp_dict["key"]
-        self.status = _temp_dict["status"]
-        self.ttl = _temp_dict["ttl"]
-
-        self.mode = _temp_dict["mode"]
-
-        # Create a DigitWord based on the array of integers passed in the JSON
-        if self.mode.lower() == 'hex':
-            _wordtype = DigitWord.HEXDIGIT
-        else:
-            _wordtype = DigitWord.DIGIT
-        self.answer = DigitWord(*_temp_dict["answer"], wordtype=_wordtype)
-
-        self.guesses_remaining = _temp_dict["guesses_remaining"]
-        self.guesses_made = _temp_dict["guesses_made"]
+    def _validate_game_mode(self, game_mode=None):
+        if not isinstance(game_mode, GameMode):
+            raise TypeError("A valid {} must be passed as the game_mode".format(type(GameMode)))

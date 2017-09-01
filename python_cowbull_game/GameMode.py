@@ -1,65 +1,151 @@
-import json
 import logging
-from python_digits import DigitWord
 
 
 class GameMode(object):
-    def __init__(self, **kwargs):
-        self._data = {
-            "mode": None,
-            "digits": None,
-            "digitType": None,
-            "guesses": None,
-            "instructions": None,
-            "help": None
-        }
-        self._kw_handler(keyword="mode", required=True, datatype=str, **kwargs)
-        self._kw_handler(keyword="digits", required=True, default=4, datatype=int, **kwargs)
-        self._kw_handler(keyword="digitType", required=False, default=0, datatype=int, **kwargs)
-        self._kw_handler(keyword="guesses", required=False, default=4, datatype=int, **kwargs)
-        self._kw_handler(keyword="instructions", required=False, datatype=str, **kwargs)
-        self._kw_handler(keyword="help", required=False, datatype=str, **kwargs)
+    def __init__(
+            self,
+            mode=None,
+            priority=None,
+            digits=None,
+            digit_type=None,
+            guesses_allowed=None,
+            instruction_text=None,
+            help_text=None
+    ):
+        # Initialize variables
+        self._mode = None
+        self._priority = None
+        self._digits = None
+        self._digit_type = None
+        self._guesses_allowed = None
+        self._instruction_text = None
+        self._help_text = None
+
+        # NOTICE: Properties are used to set 'private' fields (e.g. _mode) to handle
+        # data validation in one place. When adding a new parameter to __init__ ensure
+        # that the property is created (following the existing code) and set the
+        # property not the 'internal' variable.
+        #
+        self.mode = mode
+        self.priority = priority
+        self.digits = digits
+        self.digit_type = digit_type
+        self.guesses_allowed = guesses_allowed
+        self.instruction_text = instruction_text
+        self.help_text = help_text
 
     #
     # Overrides
     #
     def __str__(self):
-        return "Mode: {}, ".format(self._data["mode"])+ \
-               "digits: {}, ".format(self._data["digits"])+ \
-               "type: {}, ".format(self._data["digitType"])+ \
-               "guesses: {}, ".format(self._data["guesses"])+ \
-               "instructions available: {}, ".format(self._data["instructions"] is not None)+ \
-               "help available: {}".format(self._data["help"] is not None)
+        return str(self.to_dict())
 
     def __repr__(self):
-        return "<GameObject: mode: {}>".format(self._data["mode"])
+        return "<GameObject: mode: {}>".format(self._mode)
 
-    def __getattr__(self, name):
-        return self._data[name]
+    #
+    # Properties
+    #
+    @property
+    def mode(self):
+        return self._mode
 
-    def __getitem__(self, item):
-        return self._data[item]
+    @mode.setter
+    def mode(self, value):
+        self._mode = self._property_setter(
+            keyword="mode", required=True, datatype=str, value=value
+        )
+
+    @property
+    def priority(self):
+        return self._priority
+
+    @priority.setter
+    def priority(self, value):
+        self._priority = self._property_setter(
+            keyword="priority", required=True, datatype=int, value=value
+        )
+
+    @property
+    def digits(self):
+        return self._digits
+
+    @digits.setter
+    def digits(self, value):
+        self._digits = self._property_setter(
+            keyword="digits", required=False, default=4, datatype=int, value=value
+        )
+
+    @property
+    def digit_type(self):
+        return self._digit_type
+
+    @digit_type.setter
+    def digit_type(self, value):
+        self._digit_type = self._property_setter(
+            keyword="digit_type", required=False, default=0, datatype=int, value=value
+        )
+
+    @property
+    def guesses_allowed(self):
+        return self._guesses_allowed
+
+    @guesses_allowed.setter
+    def guesses_allowed(self, value):
+        self._guesses_allowed = self._property_setter(
+            keyword="guesses_allowed", required=False, default=10, datatype=int, value=value
+        )
+
+    @property
+    def instruction_text(self):
+        return self._instruction_text
+
+    @instruction_text.setter
+    def instruction_text(self, value):
+        self._instruction_text = self._property_setter(
+            keyword="instruction_text", required=False, datatype=str, value=value
+        )
+
+    @property
+    def help_text(self):
+        return self._help_text
+
+    @help_text.setter
+    def help_text(self, value):
+        self._help_text = self._property_setter(
+            keyword="help_text", required=False, datatype=str, value=value
+        )
 
     #
     # 'public' methods
     #
+    def to_dict(self):
+        return {
+            "mode": self._mode,
+            "priority": self._priority,
+            "digits": self._digits,
+            "digit_type": self._digit_type,
+            "guesses_allowed": self._guesses_allowed,
+            "instruction_text": self._instruction_text,
+            "help_text": self._help_text
+        }
 
     #
     # 'private' methods
     #
-    def _kw_handler(
-            self,
-            keyword,
+    @staticmethod
+    def _property_setter(
+            keyword=None,
             required=None,
             default=None,
             datatype=None,
-            **kwargs
+            value=None,
     ):
-        _value = kwargs.get(keyword, None)
-        logging.debug("_kw_handler: Keyword=={} Value=={}".format(keyword, _value))
+        _value = value
+        logging.debug("_property_setter: Keyword=={} Value=={}".format(keyword, _value))
 
         if required and not _value and not default:
-            raise KeyError("GameMode: '{}' not provided to __init__ and no default provided.".format(keyword))
+            raise KeyError("GameMode: '{}' not provided to __init__ and no default provided (or allowed).".format(keyword))
 
         if not _value and default is not None:
             _value = default
@@ -67,7 +153,5 @@ class GameMode(object):
         if _value and not isinstance(_value, datatype):
             raise TypeError("{} is of type {} where {} was expected.".format(keyword, type(_value), datatype))
 
-        self._data[keyword] = _value
-
-        logging.debug("_kw_handler: Keyword=={} Value=={}".format(keyword, _value))
-        return
+        logging.debug("_property_setter: Keyword=={} Value=={}".format(keyword, _value))
+        return _value

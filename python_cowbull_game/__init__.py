@@ -1,1 +1,1 @@
-from .Game import Game
+from .GameController import GameController

@@ -35,7 +35,7 @@ class Game(object):
     @property
     def guesses_allowed(self):
         self._validate_game_object(op="guesses_allowed")
-        return self._g.game_types[self._g.mode].guesses
+        return self._g.game_types[self._g.mode].guesses_allowed
 
     @property
     def key(self):
@@ -84,7 +84,7 @@ class Game(object):
             "ttl": int(time()) + 3600,
             "answer": dw.word,
             "mode": _mode,
-            "guesses_remaining": mode_info.guesses,
+            "guesses_remaining": mode_info.guesses_allowed,
             "guesses_made": 0
         }
         logging.debug("Game being created: {}".format(_game))
@@ -165,7 +165,7 @@ class Game(object):
         if self._g.status.lower() == "won":
             _return_results["message"] = self._start_again("You already won!")
         elif self._g.status.lower() == "lost":
-            _return_results["message"] = self._start_again("You have made too many guesses, you lost!")
+            _return_results["message"] = self._start_again("You have made too many guesses_allowed, you lost!")
         elif self._g.guesses_remaining < 1:
             _return_results["message"] = self._start_again("You have run out of tries, sorry!")
         elif self._g.ttl < time():
@@ -187,7 +187,7 @@ class Game(object):
 
             logging.debug("Asking the underlying GameObject to compare itself to the guess.")
             for i in self._g.answer.compare(guess):
-                logging.debug("Iteration of guesses. Processing guess {}".format(i.index))
+                logging.debug("Iteration of guesses_allowed. Processing guess {}".format(i.index))
 
                 if i.match is True:
                     logging.debug("Bull found. +1")

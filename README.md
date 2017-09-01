@@ -98,7 +98,7 @@ $ python
 >>> g.save_game() # Returns a JSON string for the caller to save
 >>> g.load_game(jsonstr:str) # Loads a game from the JSON string provided
 >>> g.digits_required # Returns the number of digits expected for the mode
->>> g.guesses_allowed # Returns the number of guesses allowed
+>>> g.guesses_allowed # Returns the number of guesses_allowed allowed
 >>> g.key             # Returns the uuid key for the game
 ```
 This package is not really designed to be used 'stand-alone'; it is normally
@@ -136,7 +136,7 @@ $ python
 
 ## Game class
 A Game provides an object representing a cowbull game. The game object tracks the
-DigitWord secret, the guesses, and success or failure. Persistence is handled by
+DigitWord secret, the guesses_allowed, and success or failure. Persistence is handled by
 passing the Game object back and forth as a JSON string, as an external caller
 is expected to provide the persistence layer.
 
@@ -151,7 +151,7 @@ is expected to provide the persistence layer.
   * ``guess(*args)`` : Make a guess with a variable list of Digits
 * Properties:
   * ``digits_required:int``. Returns the number of Digits expected for a guess (get only)
-  * ``guesses_allowed:int``. Returns the number of guesses allowed for the game (depends
+  * ``guesses_allowed:int``. Returns the number of guesses_allowed allowed for the game (depends
   upon the game mode) (get only)
   * ``key:str``. Returns the unique UUID game key.
 
@@ -196,13 +196,13 @@ specific schema:
   * ``game_modes:str`` : A list of allowed modes (easy, normal, hard, etc.).
   * ``game_states:str`` : A list of game states (playing, won, lost).
   * ``digits_used:int`` : The number of Digits used in the game (based on mode).
-  * ``guesses_allowed:int`` : The number of guesses allowed for the game mode.
+  * ``guesses_allowed:int`` : The number of guesses_allowed allowed for the game mode.
   * ``key:str`` : A string representation of a UUID 4 word unique identifier.
   * ``status:str`` : One of game_states above.
   * ``ttl:int`` : An integer representing the time at which the game key 
   should expire.
   * ``answer:DigitWord`` : The solution to the current game
   * ``mode:str`` : One of game_modes above.
-  * ``guesses_remaining:int`` : The number of guesses left which can be made.
-  * ``guesses_made:int`` : The number of guesses made.
+  * ``guesses_remaining:int`` : The number of guesses_allowed left which can be made.
+  * ``guesses_made:int`` : The number of guesses_allowed made.
   * ``schema:dict`` : The schema required for the methods ``to_json`` and ``from_json``.
