@@ -43,6 +43,16 @@ class GameObject(object):
         return self._mode
 
     @property
+    def status(self):
+        return self._status
+
+    @status.setter
+    def status(self, value):
+        if not isinstance(value, str):
+            raise TypeError("Status is expected to be a constant from GameController")
+        self._status = value
+
+    @property
     def ttl(self):
         return self._ttl
 

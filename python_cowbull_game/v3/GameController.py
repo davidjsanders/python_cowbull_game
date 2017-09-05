@@ -3,6 +3,7 @@ from python_cowbull_game.v3.GameObject import GameObject
 from python_digits import DigitWord
 import copy
 import json
+import logging
 
 
 class GameController(object):
@@ -18,7 +19,7 @@ class GameController(object):
     ):
         # load game_modes
         self.game_modes = None
-        self.load_game_modes(input_modes=game_modes)
+        self.load_modes(input_modes=game_modes)
 
         # load any game passed
         self.game = None
@@ -27,9 +28,35 @@ class GameController(object):
     #
     # 'public' methods
     #
+    def guess(self, *args):
+        if self.game is None:
+            raise ValueError("The Game is unexpectedly undefined!")
+
+        response_object = {
+            "bulls": None,
+            "cows": None,
+            "analysis": None,
+            "status": None
+        }
+
+        if self.game.status == self.GAME_WON:
+            response_object["status"] = \
+                self._start_again_message("You already won!")
+        elif self.game.status == self.GAME_LOST:
+            response_object["status"] = \
+                self._start_again_message("You already lost!")
+        elif self.game.guesses_remaining < 1:
+            response_object["status"] = \
+                self._start_again_message("You've made too many guesses")
+        else:
+            pass
+
+        return response_object
+
     def load(self, game_json=None):
         if game_json is None:    # New game_json
             _game_object = GameObject(mode=self.game_modes[0])
+            _game_object.status = self.GAME_PLAYING
         else:
             if not isinstance(game_json, str):
                 raise TypeError("Game must be passed as a serialized JSON string.")
@@ -47,7 +74,7 @@ class GameController(object):
     def save(self):
         return json.dumps(self.game.dump())
 
-    def load_game_modes(self, input_modes=None):
+    def load_modes(self, input_modes=None):
         # Set default game modes
         _modes = [
             GameMode(
@@ -89,3 +116,15 @@ class GameController(object):
 
         return _mode
 
+    def _start_again_message(self, message=None):
+        """Simple method to form a start again message and give the answer in readable form."""
+        logging.debug("Start again message delivered: {}".format(message))
+        the_answer = ', '.join(
+            [str(d) for d in self.game.answer][:-1]
+        ) + ', and ' + [str(d) for d in self.game.answer][-1]
+
+        return "{0}{1} The correct answer was {2}. Please start a new game.".format(
+            message,
+            "." if message[-1] not in [".", ",", ";", ":", "!"] else "",
+            the_answer
+        )
