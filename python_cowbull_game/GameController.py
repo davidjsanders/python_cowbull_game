@@ -149,7 +149,7 @@ class GameController(object):
 
     def save(self):
         self._validate()
-        return json.dumps(self._game.to_dict())
+        return json.dumps(self._game.dump())
 
     def load(self, game=None):
         ex_msg = "Game must be passed as a serialized JSON string."
