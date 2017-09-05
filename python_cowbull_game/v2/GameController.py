@@ -1,8 +1,10 @@
 import json
 import logging
+
 from python_cowbull_game.GameObject import GameObject
-from python_cowbull_game.GameMode import GameMode
 from python_digits import DigitWord
+
+from python_cowbull_game.v2.GameMode import GameMode
 
 
 class GameController(object):

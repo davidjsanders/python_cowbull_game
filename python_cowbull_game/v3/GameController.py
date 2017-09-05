@@ -12,12 +12,7 @@ class GameController(object):
     GAME_WON = "won"
     GAME_LOST = "lost"
 
-    def __init__(
-            self,
-            game_json = None,
-            game_modes = None,
-            mode = None
-    ):
+    def __init__(self, game_json=None, game_modes=None, mode=None):
         # load game_modes
         self.game_modes = None
         self.load_modes(input_modes=game_modes)
