@@ -64,6 +64,12 @@ class GameObject(object):
     def guesses_made(self):
         return self._guesses_made
 
+    @guesses_made.setter
+    def guesses_made(self, value):
+        if not isinstance(value, int):
+            raise TypeError("Expected int")
+        self._guesses_made = value
+
     @property
     def guesses_remaining(self):
         return self.mode.guesses_allowed - self._guesses_made

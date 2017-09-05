@@ -15,7 +15,8 @@ class GameController(object):
     def __init__(
             self,
             game_json = None,
-            game_modes = None
+            game_modes = None,
+            mode = None
     ):
         # load game_modes
         self.game_modes = None
@@ -23,7 +24,7 @@ class GameController(object):
 
         # load any game passed
         self.game = None
-        self.load(game_json=game_json)
+        self.load(game_json=game_json, mode=mode)
 
     #
     # 'public' methods
@@ -49,13 +50,46 @@ class GameController(object):
             response_object["status"] = \
                 self._start_again_message("You've made too many guesses")
         else:
-            pass
+            guess_made = DigitWord(*args, wordtype=self.game.mode.digit_type)
+            comparison = self.game.answer.compare(guess_made)
+
+            self.game.guesses_made += 1
+            response_object["bulls"] = 0
+            response_object["cows"] = 0
+            response_object["analysis"] = []
+
+            for comparison_object in comparison:
+                if comparison_object.match:
+                    response_object["bulls"] += 1
+                elif comparison_object.in_word:
+                    response_object["cows"] += 1
+                response_object["analysis"].append(comparison_object.get_object())
+
+            if response_object["bulls"] == self.game.mode.digits:
+                self.game.status = self.GAME_WON
+                self.game.guesses_made = self.game.mode.guesses_allowed
+                response_object["status"] = self._start_again_message(
+                    "Congratulations, you win!"
+                )
+            elif self.game.guesses_remaining < 1:
+                self.game.status = self.GAME_LOST
+                response_object["status"] = self._start_again_message(
+                    "Sorry, you lost!"
+                )
 
         return response_object
 
-    def load(self, game_json=None):
+    def load(self, game_json=None, mode=None):
         if game_json is None:    # New game_json
-            _game_object = GameObject(mode=self.game_modes[0])
+            if mode is not None:
+                if isinstance(mode, str):
+                    _game_object = GameObject(mode=self._match_mode(mode=mode))
+                elif isinstance(mode, GameMode):
+                    _game_object = GameObject(mode=mode)
+                else:
+                    raise TypeError("Game mode must be a GameMode or string")
+            else:
+                _game_object = GameObject(mode=self.game_modes[0])
             _game_object.status = self.GAME_PLAYING
         else:
             if not isinstance(game_json, str):
