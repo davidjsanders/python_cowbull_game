@@ -38,6 +38,18 @@ class GameController(object):
         self.load(game_json=game_json, mode=mode)
 
     #
+    # Properties
+    #
+
+    @property
+    def game_modes(self):
+        return sorted(self.game_modes, key=lambda x: x.priority)
+
+    @property
+    def game_mode_names(self):
+        return [game_mode.mode for game_mode in sorted(self.game_modes, key=lambda x: x.priority)]
+
+    #
     # 'public' methods
     #
 
