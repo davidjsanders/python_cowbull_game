@@ -1,10 +1,8 @@
-import jsonschema
 import json
 from time import time
 from unittest import TestCase
 
-from python_digits import DigitWord
-from ..Game import Game
+from python_cowbull_game.v1_deprecated.Game import Game
 
 
 class test_Game(TestCase):

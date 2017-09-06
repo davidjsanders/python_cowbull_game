@@ -1,6 +1,8 @@
-from python_digits.DigitWord import DigitWord
-from python_cowbull_game.v3.GameMode import GameMode
 import uuid
+
+from python_digits.DigitWord import DigitWord
+
+from python_cowbull_game.GameMode import GameMode
 
 
 class GameObject(object):

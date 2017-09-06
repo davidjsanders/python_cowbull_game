@@ -1,9 +1,11 @@
 import json
-import jsonschema
 import sys
 from unittest import TestCase
+
+import jsonschema
 from python_digits import DigitWord
-from ..GameObject import GameObject
+
+from python_cowbull_game.v1_deprecated.GameObject import GameObject
 
 
 class test_GameObject(TestCase):

@@ -1,7 +1,9 @@
 import json
-from python_digits import DigitWord
+
 from jsonschema import validate
-from deprecated_python_cowbull_game.GameMode import GameMode
+from python_digits import DigitWord
+
+from python_cowbull_game.v1_deprecated.GameMode import GameMode
 
 
 class GameObject(object):

@@ -1,9 +1,11 @@
-from python_cowbull_game.v3.GameMode import GameMode
-from python_cowbull_game.v3.GameObject import GameObject
-from python_digits import DigitWord
 import copy
 import json
 import logging
+
+from python_cowbull_game.v3.GameObject import GameObject
+from python_digits import DigitWord
+
+from python_cowbull_game.GameMode import GameMode
 
 
 class GameController(object):

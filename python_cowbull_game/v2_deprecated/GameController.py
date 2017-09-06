@@ -4,7 +4,7 @@ import logging
 from python_cowbull_game.GameObject import GameObject
 from python_digits import DigitWord
 
-from python_cowbull_game.v2.GameMode import GameMode
+from python_cowbull_game.v2_deprecated.GameMode import GameMode
 
 
 class GameController(object):

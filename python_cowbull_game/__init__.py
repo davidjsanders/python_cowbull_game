@@ -1,1 +1,1 @@
-from python_cowbull_game.v3.GameController import GameController
+from python_cowbull_game.GameController import GameController
