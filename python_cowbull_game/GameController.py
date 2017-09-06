@@ -30,7 +30,7 @@ class GameController(object):
         passed via game_modes).
         """
         # load game_modes
-        self.game_modes = None
+        self._game_modes = None
         self.load_modes(input_modes=game_modes)
 
         # load any game passed
@@ -43,11 +43,11 @@ class GameController(object):
 
     @property
     def game_modes(self):
-        return sorted(self.game_modes, key=lambda x: x.priority)
+        return sorted(self._game_modes, key=lambda x: x.priority)
 
     @property
     def game_mode_names(self):
-        return [game_mode.mode for game_mode in sorted(self.game_modes, key=lambda x: x.priority)]
+        return [game_mode.mode for game_mode in sorted(self._game_modes, key=lambda x: x.priority)]
 
     #
     # 'public' methods
@@ -154,7 +154,7 @@ class GameController(object):
                 else:
                     raise TypeError("Game mode must be a GameMode or string")
             else:
-                _game_object = GameObject(mode=self.game_modes[0])
+                _game_object = GameObject(mode=self._game_modes[0])
             _game_object.status = self.GAME_PLAYING
         else:
             if not isinstance(game_json, str):
@@ -218,13 +218,13 @@ class GameController(object):
                     raise TypeError("Expected list to contain only GameMode objects")
                 _modes.append(mode)
 
-        self.game_modes = copy.deepcopy(_modes)
+        self._game_modes = copy.deepcopy(_modes)
 
     #
     # 'private' methods
     #
     def _match_mode(self, mode):
-        _mode = [game_mode for game_mode in self.game_modes if game_mode.mode == mode]
+        _mode = [game_mode for game_mode in self._game_modes if game_mode.mode == mode]
         if len(_mode) < 1:
             raise ValueError("Mode {} not found - has it been initiated?".format(mode))
         _mode = _mode[0]
