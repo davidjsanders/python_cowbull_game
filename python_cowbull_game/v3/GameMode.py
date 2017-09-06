@@ -2,6 +2,19 @@ import logging
 
 
 class GameMode(object):
+    """
+    A representation of a game mode (complexity, number of digits, guesses allowed, etc.). The
+    mode contains the following information:
+
+    * mode <str>                A text name for the mode.
+    * priority <int>            An integer of the priority in terms of returning a list.
+    * digits <int>              An integer representing the number of digits used in this mode.
+    * digit_type <int>          An integer representing the type of digit used, e.g. Hex or Digit
+    * guesses_allowed <int>     An integer representing the number of guesses that can be made
+    * instruction_text <str>    A free form string for instructions on the mode
+    * help_text <str>           A free form string offering help text for the mode
+
+    """
     def __init__(
             self,
             mode=None,
@@ -12,6 +25,18 @@ class GameMode(object):
             instruction_text=None,
             help_text=None
     ):
+        """
+        Constructor to create a new mode.
+
+        :param mode: <str> A text name for the mode.
+        :param priority: <int> priority of modes (in terms of returning a list)
+        :param digits: <int> number of digits used in this mode.
+        :param digit_type: <int> type of digit, e.g. DigitWord.HEXDIGIT or DigitWord.DIGIT
+        :param guesses_allowed: <int> Number of guesses permitted.
+        :param instruction_text: <str> Instruction text (dependent upon caller to show)
+        :param help_text: <str> Help text (dependent upon caller to show)
+
+        """
         # Initialize variables
         self._mode = None
         self._priority = None
@@ -38,9 +63,17 @@ class GameMode(object):
     # Overrides
     #
     def __str__(self):
+        """
+        Override of __str__ method.
+        :return: <str> representation of the GameMode
+        """
         return str(self.dump())
 
     def __repr__(self):
+        """
+        Override of __repr__ method.
+        :return: <str> representation of object showing mode name
+        """
         return "<GameObject: mode: {}>".format(self._mode)
 
     #
@@ -48,6 +81,10 @@ class GameMode(object):
     #
     @property
     def mode(self):
+        """
+        The name of the mode.
+        :return: <str>
+        """
         return self._mode
 
     @mode.setter
@@ -58,6 +95,16 @@ class GameMode(object):
 
     @property
     def priority(self):
+        """
+        The priority of the mode when collected in a list. For example: priority 10 is less than 20,
+        so 10 will come before 20 in a list of GameMode objects.
+
+        This is useful because other modules might return a sorted list of GameMode objects to their
+        callers and priority provides a simple means to sort and sequence a collection of GameMode
+        objects.
+
+        :return: <int>
+        """
         return self._priority
 
     @priority.setter
@@ -68,6 +115,13 @@ class GameMode(object):
 
     @property
     def digits(self):
+        """
+        The number of digits used by the DigitWord used in this mode; e.g. a value of 3 would
+        indicate there are three digits (e.g. 1, 2, and 3), while a value of 5 would indicate
+        five values (e.g. 0, 1, 2, 3, 4).
+
+        :return: <int>
+        """
         return self._digits
 
     @digits.setter
@@ -78,6 +132,13 @@ class GameMode(object):
 
     @property
     def digit_type(self):
+        """
+        The digit_type is a flag used to specify the type of digit to be used; for example, a
+        digit (DigitWord.DIGIT) enables a single digit between 0 and 9, while a hex digit
+        (DigitWord.HEXDIGIT) enables a single digit between 0 and F.
+
+        :return: <int>
+        """
         return self._digit_type
 
     @digit_type.setter
@@ -88,6 +149,12 @@ class GameMode(object):
 
     @property
     def guesses_allowed(self):
+        """
+        The number of guesses the mode is allowed; for example an easy mode might allow
+        20 guesses while a hard mode only allowed 7.
+
+        :return: <int>
+        """
         return self._guesses_allowed
 
     @guesses_allowed.setter
@@ -98,6 +165,10 @@ class GameMode(object):
 
     @property
     def instruction_text(self):
+        """
+        Instructions on how to use the mode (if present).
+        :return: <str>
+        """
         return self._instruction_text
 
     @instruction_text.setter
@@ -108,6 +179,12 @@ class GameMode(object):
 
     @property
     def help_text(self):
+        """
+        Help text intended to guide the user on how to use and interact with the game
+        mode.
+
+        :return: <str>
+        """
         return self._help_text
 
     @help_text.setter
@@ -120,6 +197,10 @@ class GameMode(object):
     # 'public' methods
     #
     def dump(self):
+        """
+        Dump (convert to a dict) the GameMode object
+        :return: <dict>
+        """
         return {
             "mode": self._mode,
             "priority": self._priority,

@@ -4,31 +4,74 @@ import uuid
 
 
 class GameObject(object):
+    """
+    A GameObject holds the properties (key, status, mode, etc.), states (guesses made, remaining, etc.),
+    and the control methods to load, save, or start a new game. There is no game logic in GameObject.py,
+    simply the ability to represent a CowBull game.
+
+    See also: GameController --> the control (logic) for the game.
+
+    A GameObject is as follows:
+
+        {
+            "guesses_made": int,
+            "key": "str:a 4 word",
+            "status": "str: one of playing, won, lost",
+            "mode": {
+                "digits": int,
+                "digit_type": DigitWord.DIGIT | DigitWord.HEXDIGIT,
+                "mode": GameMode(),
+                "priority": int,
+                "help_text": str,
+                "instruction_text": str,
+                "guesses_allowed": int
+            },
+            "ttl": int,
+            "answer": [int|str0, int|str1, ..., int|strN]
+        }
+
+    """
     def __init__(
             self,
             mode=None,
             source_game=None
     ):
+        """
+        Initialize a game object to hold the state, properties, and control of the game.
+
+        :param mode: <required> A GameMode object defining the game play mode.
+        :param source_game: <optional> A JSON Serialized representation of the game.
+        """
+
+        # If no mode has been defined, then raise an error. The GameController should have
+        # passed a mode to the game object, even if it is the default mode.
         if mode is None:
             raise ValueError(
                 "A GameMode must be provided to start or load a game object"
             )
+
+        # If the mode has been passed but it's not a GameMode object, throw a TypeError
+        # and refuse the object.
         if not isinstance(mode, GameMode):
             raise TypeError(
                 "The mode passed to the game is not a GameMode!"
             )
 
-        self._key = None
-        self._status = None
-        self._ttl = None
-        self._answer = None
-        self._mode = None
-        self._guesses_remaining = None
-        self._guesses_made = None
+        self._key = None                    # A Unique ID
+        self._status = None                 # A representation of status (e.g. won, playing, etc.)
+        self._ttl = None                    # Time to live - a representation of time in seconds
+        self._answer = None                 # A DigitWord object containing the answer
+        self._mode = None                   # A GameMode object containing the mode of the current game
+        self._guesses_remaining = None      # How many guesses are remaining -- calculated field
+        self._guesses_made = None           # How many guesses have been made
 
         if source_game:
+            # There is a JSON game object, so a game should be loaded. Typically the JSON
+            # will have been provided by a persister outside this object, e.g. Redis.
             self.load(source=source_game)
         else:
+            # There is no JSON game, so a new game should be created using the mode provided
+            # in the instantiation.
             self.new(mode=mode)
 
     #
@@ -78,6 +121,15 @@ class GameObject(object):
     # 'public' methods
     #
     def dump(self):
+        """
+        Dump (return) a dict representation of the GameObject. This is a Python
+        dict and is NOT serialized. NB: the answer (a DigitWord object) and the
+        mode (a GameMode object) are converted to python objects of a list and
+        dict respectively.
+
+        :return: python <dict> of the GameObject as detailed above.
+        """
+
         return {
             "key": self._key,
             "status": self._status,
@@ -88,6 +140,14 @@ class GameObject(object):
         }
 
     def load(self, source=None):
+        """
+        Load the representation of a GameObject from a Python <dict> representing
+        the game object.
+
+        :param source: a Python <dict> as detailed above.
+
+        :return:
+        """
         if not source:
             raise ValueError("A valid dictionary must be passed as the source_dict")
         if not isinstance(source, dict):
@@ -111,7 +171,14 @@ class GameObject(object):
         self._mode = _mode
         self._guesses_made = source["guesses_made"]
 
-    def new(self, mode=None):
+    def new(self, mode):
+        """
+        Create a new instance of a game. Note, a mode MUST be provided and MUST be of
+        type GameMode.
+
+        :param mode: <required>
+
+        """
         dw = DigitWord(wordtype=mode.digit_type)
         dw.random(mode.digits)
 

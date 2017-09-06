@@ -7,12 +7,27 @@ import logging
 
 
 class GameController(object):
-    GAME_PLAYING = "playing"
-    GAME_WAITING = "waiting"
-    GAME_WON = "won"
-    GAME_LOST = "lost"
+    """GameController - Provides the controller functions (load, save, and guess) to
+    interact with a CowBull game.
+    """
+    GAME_PLAYING = "playing"    # The game is in progress.
+    GAME_WAITING = "waiting"    # The game is waiting to start - not currently used.
+    GAME_WON = "won"            # The game is over and has been won.
+    GAME_LOST = "lost"          # The game is over and has been lost.
 
     def __init__(self, game_json=None, game_modes=None, mode=None):
+        """
+        Initialize a GameController object to allow the game to be played. The controller
+        creates a game object (see GameObject.py) and allows guesses to be made against
+        the 'hidden' object.
+
+        :param game_json: <optional>, if provided is a JSON serialized representation
+        of a game; if not provided a new game is instantiated.
+        :param game_modes: <optional>, a list of GameMode objects representing game modes.
+        :param mode: <optional>, the mode the game should be played in; may be a GameMode
+        object or a str representing the name of a GameMode object already defined (e.g.
+        passed via game_modes).
+        """
         # load game_modes
         self.game_modes = None
         self.load_modes(input_modes=game_modes)
@@ -24,7 +39,20 @@ class GameController(object):
     #
     # 'public' methods
     #
+
     def guess(self, *args):
+        """
+        Make a guess, comparing the hidden object to a set of provided digits. The digits should
+        be passed as a set of arguments, e.g:
+
+        * for a normal game: 0, 1, 2, 3
+        * for a hex game: 0xA, 0xB, 5, 4
+        * alternate for hex game: 'A', 'b', 5, 4
+
+        :param args: An iterable of digits (int or str)
+        :return: A dictionary object detailing the analysis and results of the guess
+        """
+
         if self.game is None:
             raise ValueError("The Game is unexpectedly undefined!")
 
@@ -75,6 +103,35 @@ class GameController(object):
         return response_object
 
     def load(self, game_json=None, mode=None):
+        """
+        Load a game from a serialized JSON representation. The game expects a well defined
+        structure as follows (Note JSON string format):
+
+        '{
+            "guesses_made": int,
+            "key": "str:a 4 word",
+            "status": "str: one of playing, won, lost",
+            "mode": {
+                "digits": int,
+                "digit_type": DigitWord.DIGIT | DigitWord.HEXDIGIT,
+                "mode": GameMode(),
+                "priority": int,
+                "help_text": str,
+                "instruction_text": str,
+                "guesses_allowed": int
+            },
+            "ttl": int,
+            "answer": [int|str0, int|str1, ..., int|strN]
+        }'
+
+        * "mode" will be cast to a GameMode object
+        * "answer" will be cast to a DigitWord object
+
+        :param game_json: The source JSON - MUST be a string
+        :param mode: A mode (str or GameMode) for the game being loaded
+        :return: A game object
+        """
+
         if game_json is None:    # New game_json
             if mode is not None:
                 if isinstance(mode, str):
@@ -101,9 +158,28 @@ class GameController(object):
         self.game = copy.deepcopy(_game_object)
 
     def save(self):
+        """
+        Save returns a string of the JSON serialized game object.
+
+        :return: str of JSON serialized data
+        """
+
         return json.dumps(self.game.dump())
 
     def load_modes(self, input_modes=None):
+        """
+        Loads modes (GameMode objects) to be supported by the game object. Four default
+        modes are provided (normal, easy, hard, and hex) but others could be provided
+        either by calling load_modes directly or passing a list of GameMode objects to
+        the instantiation call.
+
+        :param input_modes: A list of GameMode objects; nb: even if only one new GameMode
+        object is provided, it MUST be passed as a list - for example, passing GameMode gm1
+        would require passing [gm1] NOT gm1.
+
+        :return: A list of GameMode objects (both defaults and any added).
+        """
+
         # Set default game modes
         _modes = [
             GameMode(
